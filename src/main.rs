@@ -8,7 +8,7 @@ mod audio;
 pub(crate) mod consts;
 #[cfg(feature = "dev")]
 mod dev_tools;
-mod input;
+pub(crate) mod input;
 mod materials;
 mod menus;
 mod obstacle;

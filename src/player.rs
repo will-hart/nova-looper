@@ -4,7 +4,10 @@ use bevy_enoki::{
     NoAutoAabb, ParticleEffectHandle, ParticleSpawner, prelude::ParticleSpawnerState,
 };
 
-use crate::{consts::PLAYER_STARTING_SPEED, materials::BarDataSource, screens::Screen, sun::Sun};
+use crate::{
+    consts::PLAYER_STARTING_SPEED, input::PlayerInputAngle, materials::BarDataSource,
+    screens::Screen, sun::Sun,
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Player>();
@@ -118,6 +121,7 @@ fn update_player_item_position(
 }
 
 fn set_player_position(
+    player_angle: Res<PlayerInputAngle>,
     sun: Single<&Sun>,
     mut player: Single<(&mut Transform, &ItemPosition), With<Player>>,
 ) {
@@ -131,7 +135,7 @@ fn set_player_position(
 
     player.0.rotation = Quat::from_axis_angle(
         Vec3::Z,
-        player.0.translation.truncate().to_angle() + std::f32::consts::PI,
+        player.0.translation.truncate().to_angle() + std::f32::consts::PI + player_angle.0 * 0.5,
     );
 }
 
