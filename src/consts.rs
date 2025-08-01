@@ -13,4 +13,4 @@ pub const MAGIC_MOVEMENT_SCALE: f32 = 150.0;
 pub const MAX_PLAYER_RADIUS: f32 = 800.0;
 
 /// The colour of the sun
-pub const SUN_COLOUR: Color = Color::hsla(131.0, 0.936, 0.51, 1.0);
+pub const SUN_COLOUR: Color = Color::hsla(21.0, 0.936, 0.51, 1.0);

@@ -63,7 +63,7 @@ fn spawn_obstacle(
 ) {
     // info!("Spawning obstacle");
     let mesh = meshes.add(Rhombus::new(15.0, 15.0));
-    let color = Color::hsl(42.0, 0.95, 0.67);
+    let color = Color::hsl(76.0, 0.30, 0.47);
 
     let radius = config.radius + sun.radius;
     let theta = config.theta;
