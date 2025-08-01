@@ -49,7 +49,7 @@ struct SpawnObstacle {
 }
 
 impl Command for SpawnObstacle {
-    fn apply(self, world: &mut World) -> () {
+    fn apply(self, world: &mut World) {
         let _ = world.run_system_cached_with(spawn_obstacle, self);
     }
 }
