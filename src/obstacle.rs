@@ -30,8 +30,8 @@ fn periodically_spawn_obstacles(
         return;
     }
 
-    *timer = thread_rng().gen_range(0.4..0.9);
-    let radius = thread_rng().gen_range(10.0..(MAX_PLAYER_RADIUS * 0.6));
+    *timer = thread_rng().gen_range(0.4..0.6);
+    let radius = thread_rng().gen_range(20.0..(MAX_PLAYER_RADIUS * 0.35));
     let theta = player.theta + std::f32::consts::PI;
     commands.queue(SpawnObstacle {
         theta,
