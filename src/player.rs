@@ -148,8 +148,6 @@ fn set_player_position(
         player_angle.0 * 0.3
     };
 
-    info!("r{}, e{extra_angle}", player.1.radius);
-
     player.0.rotation = Quat::from_axis_angle(
         Vec3::Z,
         player.0.translation.truncate().to_angle() + std::f32::consts::PI + extra_angle,

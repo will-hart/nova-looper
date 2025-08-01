@@ -27,10 +27,7 @@ fn spawn_sun(
     mut materials: ResMut<Assets<SunMaterial>>,
 ) {
     let sun = Sun::default();
-    let mesh = meshes.add(Rectangle::new(
-        2.0 * sun.radius,
-        2.0 * sun.radius,
-    ));
+    let mesh = meshes.add(Rectangle::new(2.0 * sun.radius, 2.0 * sun.radius));
     commands.spawn((
         Mesh2d(mesh),
         MeshMaterial2d(materials.add(SunMaterial::default())),
