@@ -2016,6 +2016,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d674e81391d1e1ab681a28d99df07927c6d4aa5b027d7da16ba32d1d21ecd99"
 
 [[package]]
+name = "flare"
+version = "0.1.0"
+dependencies = [
+ "avian2d",
+ "bevy",
+ "log",
+ "rand",
+ "tracing",
+]
+
+[[package]]
 name = "flate2"
 version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4012,17 +4023,6 @@ name = "stackfuture"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6eae92052b72ef70dafa16eddbabffc77e5ca3574be2f7bc1127b36f0a7ad7f2"
-
-[[package]]
-name = "starflow"
-version = "0.1.0"
-dependencies = [
- "avian2d",
- "bevy",
- "log",
- "rand",
- "tracing",
-]
 
 [[package]]
 name = "static_assertions"

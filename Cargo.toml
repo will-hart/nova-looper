@@ -1,5 +1,5 @@
 [package]
-name = "starflow"
+name = "flare"
 authors = ["William Hart <391950+will-hart@users.noreply.github.com>"]
 version = "0.1.0"
 edition = "2024"

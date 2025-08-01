@@ -42,7 +42,7 @@ impl Plugin for AppPlugin {
                 })
                 .set(WindowPlugin {
                     primary_window: Window {
-                        title: "Starflow".to_string(),
+                        title: "Flare".to_string(),
                         fit_canvas_to_parent: true,
                         ..default()
                     }
