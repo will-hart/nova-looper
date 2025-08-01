@@ -5,8 +5,11 @@ use bevy_enoki::{
 };
 
 use crate::{
-    consts::PLAYER_STARTING_SPEED, input::PlayerInputAngle, materials::BarDataSource,
-    screens::Screen, sun::Sun,
+    consts::{MAX_PLAYER_RADIUS, PLAYER_STARTING_SPEED},
+    input::PlayerInputAngle,
+    materials::BarDataSource,
+    screens::Screen,
+    sun::Sun,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -139,9 +142,17 @@ fn set_player_position(
         0.1,
     );
 
+    let extra_angle = if player.1.radius <= 1.0 || player.1.radius >= MAX_PLAYER_RADIUS {
+        0.0
+    } else {
+        player_angle.0 * 0.3
+    };
+
+    info!("r{}, e{extra_angle}", player.1.radius);
+
     player.0.rotation = Quat::from_axis_angle(
         Vec3::Z,
-        player.0.translation.truncate().to_angle() + std::f32::consts::PI + player_angle.0 * 0.5,
+        player.0.translation.truncate().to_angle() + std::f32::consts::PI + extra_angle,
     );
 }
 
