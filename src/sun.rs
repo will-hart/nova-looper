@@ -28,8 +28,8 @@ fn spawn_sun(
 ) {
     let sun = Sun::default();
     let mesh = meshes.add(Rectangle::new(
-        2.0 * sun.radius + 500.0,
-        2.0 * sun.radius + 500.0,
+        2.0 * sun.radius,
+        2.0 * sun.radius,
     ));
     commands.spawn((
         Mesh2d(mesh),
