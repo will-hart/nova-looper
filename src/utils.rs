@@ -10,6 +10,10 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
+pub fn format_number(number: f32) -> String {
+    format!("{number:.0}")
+}
+
 /// Marks the shape to rotate around the z-axis with the given speed
 /// in units per second
 #[derive(Component, Debug, Reflect)]

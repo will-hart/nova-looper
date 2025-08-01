@@ -13,6 +13,7 @@ mod materials;
 mod menus;
 mod obstacle;
 mod player;
+mod score;
 mod screens;
 mod sun;
 mod theme;
@@ -61,6 +62,7 @@ impl Plugin for AppPlugin {
             menus::plugin,
             obstacle::plugin,
             player::plugin,
+            score::plugin,
             screens::plugin,
             sun::plugin,
             theme::plugin,

@@ -62,7 +62,7 @@ pub struct ItemPosition {
 impl Default for ItemPosition {
     fn default() -> Self {
         Self {
-            radius: 50.0,
+            radius: 250.0,
             speed: PLAYER_STARTING_SPEED,
             theta: 0.0,
             center: Vec2::ZERO,
@@ -152,5 +152,5 @@ fn heat_generation(time: Res<Time>, mut player: Single<(&ItemPosition, &mut Play
     } else {
         2.0 / (0.005 * distance)
     };
-    player.1.0 += time.delta_secs() * rate.clamp(-10.0, 10.0);
+    player.1.0 = (player.1.0 + time.delta_secs() * rate.clamp(-10.0, 10.0)).clamp(0.0, 100.0);
 }

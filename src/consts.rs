@@ -14,3 +14,6 @@ pub const MAX_PLAYER_RADIUS: f32 = 800.0;
 
 /// The colour of the sun
 pub const SUN_COLOUR: Color = Color::hsla(21.0, 0.936, 0.51, 1.0);
+
+/// The rate the score increases each second
+pub const SCORE_INCREASE_RATE: f32 = 7.0;

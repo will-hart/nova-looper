@@ -77,7 +77,7 @@ fn spawn_power_bar(
     commands.spawn((
         Node {
             position_type: PositionType::Absolute,
-            bottom: Val::Px(10.0),
+            top: Val::Px(10.0),
             right: Val::Px(12.0),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
@@ -119,7 +119,7 @@ fn spawn_health_bar(
     commands.spawn((
         Node {
             position_type: PositionType::Absolute,
-            bottom: Val::Px(40.0),
+            top: Val::Px(40.0),
             right: Val::Px(12.0),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
