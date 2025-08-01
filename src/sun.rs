@@ -28,13 +28,14 @@ fn spawn_sun(
 ) {
     let sun = Sun::default();
     let mesh = meshes.add(Rectangle::new(
-        2.0 * sun.radius + 50.0,
-        2.0 * sun.radius + 50.0,
+        2.0 * sun.radius + 500.0,
+        2.0 * sun.radius + 500.0,
     ));
     commands.spawn((
         Mesh2d(mesh),
         MeshMaterial2d(materials.add(SunMaterial::default())),
         StateScoped(Screen::Gameplay),
+        Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)),
         sun,
     ));
 }
