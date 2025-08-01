@@ -8,7 +8,7 @@ use rand::{Rng, thread_rng};
 
 use crate::{
     consts::MAX_PLAYER_RADIUS,
-    player::{ItemPosition, Player, PlayerHeat, PlayerPower},
+    player::{ItemPosition, Player, PlayerShield, PlayerPower},
     screens::Screen,
     sun::Sun,
     utils::DestroyAt,
@@ -110,7 +110,7 @@ fn collide_obstacles(
     asset_server: Res<AssetServer>,
     colliders: Query<(Entity, &CollidingEntities)>,
     obstacles: Query<&Transform, With<Obstacle>>,
-    mut power: Single<(&mut PlayerPower, &mut PlayerHeat)>,
+    mut power: Single<(&mut PlayerPower, &mut PlayerShield)>,
 ) {
     for (_entity, colliding) in &colliders {
         if colliding.is_empty() {

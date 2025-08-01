@@ -22,7 +22,7 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        (heat_generation, power_generation).run_if(in_state(Screen::Gameplay)),
+        (shield_decay, power_generation, shield_monitor).run_if(in_state(Screen::Gameplay)),
     );
     app.add_systems(
         PostUpdate,
@@ -45,11 +45,17 @@ impl BarDataSource for PlayerPower {
     }
 }
 
-#[derive(Component, Reflect, Default)]
+#[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct PlayerHeat(pub f32);
+pub struct PlayerShield(pub f32);
 
-impl BarDataSource for PlayerHeat {
+impl Default for PlayerShield {
+    fn default() -> Self {
+        Self(100.0)
+    }
+}
+
+impl BarDataSource for PlayerShield {
     fn current_frac(&self) -> f32 {
         (self.0 / 100.0).clamp(0.0, 100.0)
     }
@@ -97,7 +103,7 @@ fn spawn_player(
         StateScoped(Screen::Gameplay),
         Player,
         PlayerPower::default(),
-        PlayerHeat::default(),
+        PlayerShield::default(),
         ItemPosition::default(),
         RigidBody::Kinematic,
         Collider::capsule(4.5, 9.0),
@@ -161,12 +167,18 @@ fn power_generation(time: Res<Time>, mut player: Single<(&ItemPosition, &mut Pla
     player.1.0 += time.delta_secs() * power.clamp(-3.0, 10.0);
 }
 
-fn heat_generation(time: Res<Time>, mut player: Single<(&ItemPosition, &mut PlayerHeat)>) {
+fn shield_decay(time: Res<Time>, mut player: Single<(&ItemPosition, &mut PlayerShield)>) {
     let distance = player.0.radius;
     let rate = if distance > 55.0 {
-        -0.3 * distance + 23.0 // linear after intersection
+        0.3 * distance + 23.0 // linear after intersection
     } else {
-        2.0 / (0.005 * distance)
+        -2.0 / (0.005 * distance)
     };
     player.1.0 = (player.1.0 + time.delta_secs() * rate.clamp(-10.0, 10.0)).clamp(0.0, 100.0);
+}
+
+fn shield_monitor(mut next_state: ResMut<NextState<Screen>>, shield: Single<&PlayerShield>) {
+    if shield.0 < 0.1 {
+        next_state.set(Screen::GameOver);
+    }
 }

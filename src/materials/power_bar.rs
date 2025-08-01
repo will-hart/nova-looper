@@ -6,7 +6,7 @@ use bevy::{
 
 use crate::{
     Pause,
-    player::{PlayerHeat, PlayerPower},
+    player::{PlayerPower, PlayerShield},
     screens::Screen,
 };
 
@@ -15,19 +15,21 @@ const SHADER_ASSET_PATH: &str = "shaders/power_bar.wgsl";
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<PowerBarParentMarker>();
     app.register_type::<PowerBarMarker>();
+    app.register_type::<ShieldBarParentMarker>();
+    app.register_type::<ShieldBarMarker>();
 
     app.add_plugins(UiMaterialPlugin::<UiProgressBarMaterial>::default());
 
     app.add_systems(
         OnEnter(Screen::Gameplay),
-        (spawn_power_bar, spawn_health_bar),
+        (spawn_power_bar, spawn_shield_bar),
     );
 
     app.add_systems(
         Update,
         (
             update_bar::<PowerBarMarker, PlayerPower>,
-            update_bar::<HealthBarMarker, PlayerHeat>,
+            update_bar::<ShieldBarMarker, PlayerShield>,
         )
             .run_if(in_state(Screen::Gameplay).and(in_state(Pause(false)))),
     );
@@ -59,11 +61,11 @@ pub struct PowerBarMarker;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct HealthBarParentMarker;
+pub struct ShieldBarParentMarker;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct HealthBarMarker;
+pub struct ShieldBarMarker;
 
 fn spawn_power_bar(
     mut commands: Commands,
@@ -107,10 +109,10 @@ fn spawn_power_bar(
     ));
 }
 
-fn spawn_health_bar(
+fn spawn_shield_bar(
     mut commands: Commands,
     mut ui_materials: ResMut<Assets<UiProgressBarMaterial>>,
-    heat_bars: Query<Entity, With<HealthBarParentMarker>>,
+    heat_bars: Query<Entity, With<ShieldBarParentMarker>>,
 ) {
     for entity in &heat_bars {
         commands.entity(entity).despawn();
@@ -128,9 +130,9 @@ fn spawn_health_bar(
         PowerBarParentMarker,
         StateScoped(Screen::Gameplay),
         children![
-            Text::new("HEAT "),
+            Text::new("SHIELD "),
             (
-                HealthBarMarker,
+                ShieldBarMarker,
                 Node {
                     width: Val::Px(250.0 - 12.0),
                     height: Val::Px(30.0 - 12.0),
