@@ -4,7 +4,7 @@ use rand::{Rng, thread_rng};
 
 use crate::{
     consts::MAX_PLAYER_RADIUS,
-    player::{ItemPosition, Player},
+    player::{ItemPosition, Player, PlayerHeat, PlayerPower},
     screens::Screen,
     sun::Sun,
     utils::DestroyAt,
@@ -12,7 +12,7 @@ use crate::{
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Obstacle>();
-    app.add_systems(Update, periodically_spawn_obstacles);
+    app.add_systems(Update, (periodically_spawn_obstacles, collide_obstacles));
 }
 
 #[derive(Component, Reflect)]
@@ -83,10 +83,32 @@ fn spawn_obstacle(
             center: Vec2::ZERO,
         },
         Visibility::Visible,
-        // children![
         Mesh2d(mesh),
         MeshMaterial2d(materials.add(color)),
-        // Rotate::default(),
-        // ],
     ));
+}
+
+fn collide_obstacles(
+    mut commands: Commands,
+    colliders: Query<(Entity, &CollidingEntities)>,
+    obstacles: Query<(), With<Obstacle>>,
+    mut power: Single<(&mut PlayerPower, &mut PlayerHeat)>,
+) {
+    for (_entity, colliding) in &colliders {
+        if colliding.is_empty() {
+            continue;
+        }
+
+        for collider in colliding.iter() {
+            if obstacles.get(*collider).is_ok() {
+                power.0.0 = 0.0;
+                power.1.0 = (power.1.0 + 30.0).clamp(0.0, 100.0);
+
+                commands.entity(*collider).remove::<Sensor>();
+                commands.entity(*collider).remove::<Collider>();
+                commands.entity(*collider).remove::<RigidBody>();
+            }
+        }
+        if colliding.iter().any(|e| obstacles.get(*e).is_ok()) {}
+    }
 }

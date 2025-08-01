@@ -1,3 +1,5 @@
+use bevy::color::LinearRgba;
+
 /// The speed the player starts with
 pub const PLAYER_STARTING_SPEED: f32 = 0.5;
 
@@ -9,3 +11,6 @@ pub const MAGIC_MOVEMENT_SCALE: f32 = 150.0;
 
 /// The maximum radius a player can have relateive the centre of the sun
 pub const MAX_PLAYER_RADIUS: f32 = 800.0;
+
+/// The colour of the sun
+pub const SUN_COLOUR: LinearRgba = LinearRgba::new(0.97, 0.65, 0.05, 1.0);

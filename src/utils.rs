@@ -22,12 +22,10 @@ impl Default for Rotate {
     }
 }
 
+/// Rotates shapes a little bit each frame based on the rotation speed
 fn rotate_shapes(time: Res<Time>, mut shapes: Query<(&mut Transform, &Rotate)>) {
     for (mut tx, rot) in &mut shapes {
-        tx.rotate_around(
-            Vec3::Z,
-            Quat::from_axis_angle(Vec3::Z, rot.0 * time.delta_secs()),
-        );
+        tx.rotation = Quat::from_axis_angle(Vec3::Z, rot.0 * time.delta_secs());
     }
 }
 
@@ -35,6 +33,7 @@ fn rotate_shapes(time: Res<Time>, mut shapes: Query<(&mut Transform, &Rotate)>) 
 #[reflect(Component)]
 pub struct DestroyAt(pub f32);
 
+/// Destroys [DestroyAt] components after their scheduled time
 fn destroy_at_watcher(
     mut commands: Commands,
     time: Res<Time>,

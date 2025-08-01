@@ -15,6 +15,10 @@ pub(super) fn plugin(app: &mut App) {
             .run_if(in_state(Screen::Gameplay)),
     );
     app.add_systems(
+        Update,
+        (heat_generation, power_generation).run_if(in_state(Screen::Gameplay)),
+    );
+    app.add_systems(
         PostUpdate,
         camera_follow_player.run_if(in_state(Screen::Gameplay)),
     );
@@ -27,11 +31,21 @@ pub struct Player;
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct PlayerPower(pub u8);
+pub struct PlayerPower(pub f32);
 
 impl BarDataSource for PlayerPower {
     fn current_frac(&self) -> f32 {
-        (self.0 as f32 / 100.0).clamp(0.0, 100.0)
+        (self.0 / 100.0).clamp(0.0, 100.0)
+    }
+}
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct PlayerHeat(pub f32);
+
+impl BarDataSource for PlayerHeat {
+    fn current_frac(&self) -> f32 {
+        (self.0 / 100.0).clamp(0.0, 100.0)
     }
 }
 
@@ -75,10 +89,12 @@ fn spawn_player(
         StateScoped(Screen::Gameplay),
         Player,
         PlayerPower::default(),
+        PlayerHeat::default(),
         ItemPosition::default(),
         RigidBody::Kinematic,
         Collider::circle(10.0),
         Sensor,
+        CollidingEntities::default(),
     ));
 }
 
@@ -120,4 +136,21 @@ fn reset_camera_position(mut cameras: Query<&mut Transform, With<Camera2d>>) {
     for mut tx in &mut cameras {
         tx.translation = Vec3::ZERO;
     }
+}
+
+fn power_generation(time: Res<Time>, mut player: Single<(&ItemPosition, &mut PlayerPower)>) {
+    let distance = player.0.radius;
+    // linear decay
+    let power = -0.05 * distance + 10.0;
+    player.1.0 += time.delta_secs() * power.clamp(-3.0, 10.0);
+}
+
+fn heat_generation(time: Res<Time>, mut player: Single<(&ItemPosition, &mut PlayerHeat)>) {
+    let distance = player.0.radius;
+    let rate = if distance > 55.0 {
+        -0.3 * distance + 23.0 // linear after intersection
+    } else {
+        2.0 / (0.005 * distance)
+    };
+    player.1.0 += time.delta_secs() * rate.clamp(-10.0, 10.0);
 }

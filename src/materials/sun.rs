@@ -4,6 +4,8 @@ use bevy::{
     sprite::{Material2d, Material2dPlugin},
 };
 
+use crate::consts::SUN_COLOUR;
+
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(Material2dPlugin::<SunMaterial>::default());
 }
@@ -31,7 +33,7 @@ impl Material2d for SunMaterial {
 impl Default for SunMaterial {
     fn default() -> Self {
         Self {
-            color: LinearRgba::new(0.97, 0.65, 0.05, 1.0),
+            color: SUN_COLOUR,
             thickness: 25.0,
             fill: 1,
         }
