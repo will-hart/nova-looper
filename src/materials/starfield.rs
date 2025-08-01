@@ -47,7 +47,7 @@ impl Default for StarfieldMaterial {
                 rand::thread_rng().gen_range(0.0..1000.0),
             ),
             background: LinearRgba::new(0.0, 0.0, 0.0, 1.0),
-            foreground: LinearRgba::new(1.0, 1.0, 1.0, 1.0),
+            foreground: LinearRgba::new(0.0, 0.0, 0.0, 1.0),
         }
     }
 }

@@ -5,7 +5,31 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = { version = "0.16", features = ["wayland"] }
+avian2d = "0.3"
+bevy = { version = "0.16", default-features = false, features = [
+    "wayland",
+    # "bevy_anti_aliasing", #main branch
+    "bevy_asset", #enabled by bevy_core_pipeline
+    "bevy_audio",
+    "bevy_color", # enabled by bevy_sprite
+    "bevy_core_pipeline", #enabled by bevy_sprite
+    "bevy_input_focus",
+    "bevy_log",
+    "bevy_picking",
+    "bevy_render", #enabled by bevy_core_pipeline
+    "bevy_sprite",
+    "bevy_sprite_picking_backend",
+    "bevy_state",
+    "bevy_ui",
+    "bevy_ui_picking_backend",
+    "bevy_window",
+    "bevy_winit",
+    "default_font",
+    "multi_threaded",
+    "png",
+    "vorbis",
+    "webgl2"
+]}
 rand = "0.8"
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4", features = [

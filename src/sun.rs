@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{materials::SunMaterial, screens::Screen};
+use crate::{consts::SUN_STARTING_RADIUS, materials::SunMaterial, screens::Screen};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Sun>();
@@ -15,7 +15,9 @@ pub struct Sun {
 
 impl Default for Sun {
     fn default() -> Self {
-        Self { radius: 500.0 }
+        Self {
+            radius: SUN_STARTING_RADIUS,
+        }
     }
 }
 
@@ -32,6 +34,7 @@ fn spawn_sun(
     commands.spawn((
         Mesh2d(mesh),
         MeshMaterial2d(materials.add(SunMaterial::default())),
+        StateScoped(Screen::Gameplay),
         sun,
     ));
 }

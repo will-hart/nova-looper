@@ -5,6 +5,7 @@
 
 mod asset_tracking;
 mod audio;
+pub(crate) mod consts;
 #[cfg(feature = "dev")]
 mod dev_tools;
 mod input;
@@ -15,7 +16,9 @@ mod player;
 mod screens;
 mod sun;
 mod theme;
+pub(crate) mod utils;
 
+use avian2d::prelude::*;
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 fn main() -> AppExit {
@@ -61,7 +64,14 @@ impl Plugin for AppPlugin {
             screens::plugin,
             sun::plugin,
             theme::plugin,
+            utils::plugin,
         ));
+
+        // Third-party libs
+        app.add_plugins(PhysicsPlugins::default());
+
+        // #[cfg(debug_assertions)]
+        // app.add_plugins(PhysicsDebugPlugin::default());
 
         // Order new `AppSystems` variants by adding them here:
         app.configure_sets(

@@ -44,8 +44,8 @@ fn rand2(p: vec2<f32>) -> vec2<f32> {
 @fragment
 fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
     var result = material.background.rgb;
-    result = result + stars(in.uv - material.coords / (1000.0 * 1.2), 3.0, 0.025, 2.0);
-    result = result + stars(in.uv - material.coords / (1000.0 * 1.4), 10.0, 0.018, 1.0);
-    result = result + stars(in.uv - material.coords / (1000.0 * 2.0), 30.0, 0.015, 0.5);
+    // result = result + stars(in.uv - material.coords / (1000.0 * 1.2), 3.0, 0.025, 2.0);
+    // result = result + stars(in.uv - material.coords / (1000.0 * 1.4), 10.0, 0.018, 1.0);
+    // result = result + stars(in.uv - material.coords / (1000.0 * 2.0), 30.0, 0.015, 0.5);
     return vec4<f32>(result, 1.0);
 }
