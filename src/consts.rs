@@ -20,3 +20,6 @@ pub const SUN_COLOUR: Color = Color::hsla(21.0, 0.936, 0.51, 1.0);
 
 /// The rate the score increases each second
 pub const SCORE_INCREASE_RATE: f32 = 7.0;
+
+/// The cost to shields of hitting an obstacle
+pub const SHIELD_COST_ON_OBSTACLE_HIT: f32 = 30.0;

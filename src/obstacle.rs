@@ -7,8 +7,8 @@ use bevy_enoki::{
 use rand::{Rng, thread_rng};
 
 use crate::{
-    consts::MAX_PLAYER_RADIUS,
-    player::{ItemPosition, Player, PlayerShield, PlayerPower},
+    consts::{MAX_PLAYER_RADIUS, SHIELD_COST_ON_OBSTACLE_HIT},
+    player::{ItemPosition, Player, PlayerPower, PlayerShield},
     screens::Screen,
     sun::Sun,
     utils::DestroyAt,
@@ -120,7 +120,7 @@ fn collide_obstacles(
         for collider in colliding.iter() {
             if let Ok(tx) = obstacles.get(*collider) {
                 power.0.0 = 0.0;
-                power.1.0 = (power.1.0 + 30.0).clamp(0.0, 100.0);
+                power.1.0 = (power.1.0 - SHIELD_COST_ON_OBSTACLE_HIT).clamp(0.0, 100.0);
 
                 // create a particle effect
                 let mut new_tx = tx.translation.clone();
