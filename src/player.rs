@@ -1,5 +1,8 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use bevy_enoki::{
+    NoAutoAabb, ParticleEffectHandle, ParticleSpawner, prelude::ParticleSpawnerState,
+};
 
 use crate::{consts::PLAYER_STARTING_SPEED, materials::BarDataSource, screens::Screen, sun::Sun};
 
@@ -72,6 +75,7 @@ impl Default for ItemPosition {
 
 fn spawn_player(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
@@ -96,6 +100,13 @@ fn spawn_player(
         Collider::capsule(4.5, 9.0),
         Sensor,
         CollidingEntities::default(),
+        children![(
+            Transform::from_translation(Vec3::new(0.0, 0.0, 0.1)),
+            ParticleSpawner::default(),
+            ParticleEffectHandle(asset_server.load("particles/rocket_trail.ron")),
+            ParticleSpawnerState::default(),
+            NoAutoAabb,
+        )],
     ));
 }
 
