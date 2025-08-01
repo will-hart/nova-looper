@@ -33,7 +33,7 @@ impl Default for SunMaterial {
         Self {
             color: LinearRgba::new(0.97, 0.65, 0.05, 1.0),
             thickness: 25.0,
-            fill: 0,
+            fill: 1,
         }
     }
 }

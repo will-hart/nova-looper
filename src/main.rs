@@ -7,6 +7,7 @@ mod asset_tracking;
 mod audio;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod input;
 mod materials;
 mod menus;
 mod player;
@@ -51,6 +52,7 @@ impl Plugin for AppPlugin {
             audio::plugin,
             #[cfg(feature = "dev")]
             dev_tools::plugin,
+            input::plugin,
             materials::plugin,
             menus::plugin,
             player::plugin,
