@@ -1,8 +1,12 @@
 use bevy::prelude::*;
 
-use crate::{player::PlayerPosition, screens::Screen};
+use crate::{
+    player::{ItemPosition, Player},
+    screens::Screen,
+};
 
-const RANDOM_MOVEMENT_SCALE: f32 = 350.0;
+const RANDOM_MOVEMENT_SCALE: f32 = 150.0;
+pub const MAX_PLAYER_RADIUS: f32 = 400.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, control_player.run_if(in_state(Screen::Gameplay)));
@@ -10,7 +14,7 @@ pub(super) fn plugin(app: &mut App) {
 
 fn control_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player: Single<&mut PlayerPosition>,
+    mut player: Single<&mut ItemPosition, With<Player>>,
     time: Res<Time>,
 ) {
     let mut delta = 0f32;
@@ -23,7 +27,7 @@ fn control_player(
     }
 
     if delta.abs() > 0.1 {
-        player.radius =
-            (player.radius + delta * time.delta_secs() * RANDOM_MOVEMENT_SCALE).clamp(0.5, 200.0);
+        player.radius = (player.radius + delta * time.delta_secs() * RANDOM_MOVEMENT_SCALE)
+            .clamp(0.5, MAX_PLAYER_RADIUS);
     }
 }

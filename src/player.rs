@@ -22,7 +22,7 @@ pub struct Player;
 
 #[derive(Component, Debug, Reflect, Clone, Copy)]
 #[reflect(Component)]
-pub struct PlayerPosition {
+pub struct ItemPosition {
     // The distance from the sun edge
     pub radius: f32,
     pub theta: f32,
@@ -30,7 +30,7 @@ pub struct PlayerPosition {
     pub center: Vec2,
 }
 
-impl Default for PlayerPosition {
+impl Default for ItemPosition {
     fn default() -> Self {
         Self {
             radius: 50.0,
@@ -58,14 +58,14 @@ fn spawn_player(
         Mesh2d(player_mesh),
         MeshMaterial2d(materials.add(color)),
         Player,
-        PlayerPosition::default(),
+        ItemPosition::default(),
     ));
 }
 
 fn set_player_position(
     time: Res<Time>,
     sun: Single<&Sun>,
-    mut player: Single<(&mut Transform, &PlayerPosition)>,
+    mut player: Single<(&mut Transform, &ItemPosition), With<Player>>,
 ) {
     let radius = sun.radius + player.1.radius;
 

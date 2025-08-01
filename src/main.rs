@@ -10,6 +10,7 @@ mod dev_tools;
 mod input;
 mod materials;
 mod menus;
+mod obstacle;
 mod player;
 mod screens;
 mod sun;
@@ -55,6 +56,7 @@ impl Plugin for AppPlugin {
             input::plugin,
             materials::plugin,
             menus::plugin,
+            obstacle::plugin,
             player::plugin,
             screens::plugin,
             sun::plugin,
