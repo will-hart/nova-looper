@@ -10,21 +10,36 @@ pub(super) fn plugin(app: &mut App) {
 
 fn spawn_main_menu(mut commands: Commands) {
     commands.spawn((
-        widget::ui_root("Main Menu"),
+        Name::new("Main Menu"),
+        Pickable::IGNORE,
         GlobalZIndex(2),
         StateScoped(Menu::Main),
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::ZERO,
+            left: Val::ZERO,
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            padding: UiRect::all(Val::Px(20.0)),
+            display: Display::Flex,
+            flex_direction: FlexDirection::Row,
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::FlexEnd,
+            column_gap: Val::Px(20.0),
+            ..default()
+        },
         #[cfg(not(target_family = "wasm"))]
         children![
-            widget::button("Play", enter_loading_or_gameplay_screen),
-            widget::button("Settings", open_settings_menu),
-            widget::button("Credits", open_credits_menu),
-            widget::button("Exit", exit_app),
+            widget::menu_button("Play", enter_loading_or_gameplay_screen),
+            // widget::menu_button("Settings", open_settings_menu),
+            widget::menu_button("Credits", open_credits_menu),
+            widget::menu_button("Exit", exit_app),
         ],
         #[cfg(target_family = "wasm")]
         children![
-            widget::button("Play", enter_loading_or_gameplay_screen),
-            widget::button("Settings", open_settings_menu),
-            widget::button("Credits", open_credits_menu),
+            widget::menu_button("Play", enter_loading_or_gameplay_screen),
+            // widget::menu_button("Settings", open_settings_menu),
+            widget::menu_button("Credits", open_credits_menu),
         ],
     ));
 }
@@ -41,9 +56,9 @@ fn enter_loading_or_gameplay_screen(
     }
 }
 
-fn open_settings_menu(_: Trigger<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Settings);
-}
+// fn open_settings_menu(_: Trigger<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
+//     next_menu.set(Menu::Settings);
+// }
 
 fn open_credits_menu(_: Trigger<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(Menu::Credits);

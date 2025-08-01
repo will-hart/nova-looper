@@ -72,6 +72,29 @@ where
     )
 }
 
+/// A smaller button with text and an action defined as an [`Observer`].
+pub fn menu_button<E, B, M, I>(text: impl Into<String>, action: I) -> impl Bundle
+where
+    E: Event,
+    B: Bundle,
+    I: IntoObserverSystem<E, B, M>,
+{
+    button_base(
+        text,
+        action,
+        (
+            Node {
+                width: Px(180.0),
+                height: Px(60.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
+            BorderRadius::MAX,
+        ),
+    )
+}
+
 /// A small square button with text and an action defined as an [`Observer`].
 pub fn button_small<E, B, M, I>(text: impl Into<String>, action: I) -> impl Bundle
 where
@@ -122,7 +145,7 @@ where
                     children![(
                         Name::new("Button Text"),
                         Text(text),
-                        TextFont::from_font_size(40.0),
+                        TextFont::from_font_size(20.0),
                         TextColor(BUTTON_TEXT),
                         // Don't bubble picking events from the text up to the button.
                         Pickable::IGNORE,
