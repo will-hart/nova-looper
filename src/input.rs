@@ -15,17 +15,12 @@ fn control_player(
     mut player: Single<&mut ItemPosition, With<Player>>,
     time: Res<Time>,
 ) {
-    let mut delta = 0f32;
+    let mut delta = -1.0f32;
 
-    if keyboard_input.pressed(KeyCode::ArrowUp) || keyboard_input.pressed(KeyCode::KeyW) {
-        delta += 1.0;
-    }
-    if keyboard_input.pressed(KeyCode::ArrowDown) || keyboard_input.pressed(KeyCode::KeyS) {
-        delta -= 1.0;
+    if keyboard_input.pressed(KeyCode::Space) {
+        delta = 1.0;
     }
 
-    if delta.abs() > 0.1 {
-        player.radius = (player.radius + delta * time.delta_secs() * MAGIC_MOVEMENT_SCALE)
-            .clamp(0.5, MAX_PLAYER_RADIUS);
-    }
+    player.radius = (player.radius + delta * time.delta_secs() * MAGIC_MOVEMENT_SCALE)
+        .clamp(0.5, MAX_PLAYER_RADIUS);
 }
