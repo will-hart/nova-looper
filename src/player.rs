@@ -86,6 +86,7 @@ fn spawn_player(
     commands.spawn((
         Mesh2d(player_mesh),
         MeshMaterial2d(materials.add(color)),
+        Transform::from_xyz(0.0, 0.0, 0.1),
         StateScoped(Screen::Gameplay),
         Player,
         PlayerPower::default(),
@@ -114,7 +115,7 @@ fn set_player_position(
     player.0.translation = Vec3::new(
         radius * player.1.theta.sin(),
         radius * player.1.theta.cos(),
-        0.0,
+        0.1,
     );
 
     player.0.rotation = Quat::from_axis_angle(

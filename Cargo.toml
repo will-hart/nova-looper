@@ -30,6 +30,7 @@ bevy = { version = "0.16", default-features = false, features = [
     "vorbis",
     "webgl2"
 ]}
+bevy_enoki = "0.4"
 rand = "0.8"
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4", features = [

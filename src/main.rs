@@ -21,6 +21,7 @@ pub(crate) mod utils;
 
 use avian2d::prelude::*;
 use bevy::{asset::AssetMetaCheck, prelude::*};
+use bevy_enoki::EnokiPlugin;
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -71,6 +72,7 @@ impl Plugin for AppPlugin {
 
         // Third-party libs
         app.add_plugins(PhysicsPlugins::default());
+        app.add_plugins(EnokiPlugin);
 
         // #[cfg(debug_assertions)]
         // app.add_plugins(PhysicsDebugPlugin::default());

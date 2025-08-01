@@ -1,5 +1,9 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use bevy_enoki::{
+    NoAutoAabb, ParticleEffectHandle, ParticleSpawner,
+    prelude::{OneShot, ParticleEffectInstance, ParticleSpawnerState, Rval},
+};
 use rand::{Rng, thread_rng};
 
 use crate::{
@@ -12,7 +16,16 @@ use crate::{
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Obstacle>();
-    app.add_systems(Update, (periodically_spawn_obstacles, collide_obstacles));
+    app.register_type::<AsteroidDebris>();
+
+    app.add_systems(
+        Update,
+        (
+            periodically_spawn_obstacles,
+            collide_obstacles,
+            update_debris_gravity_direction,
+        ),
+    );
 }
 
 #[derive(Component, Reflect)]
@@ -88,10 +101,15 @@ fn spawn_obstacle(
     ));
 }
 
+#[derive(Debug, Component, Reflect)]
+#[reflect(Component)]
+pub struct AsteroidDebris;
+
 fn collide_obstacles(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     colliders: Query<(Entity, &CollidingEntities)>,
-    obstacles: Query<(), With<Obstacle>>,
+    obstacles: Query<&Transform, With<Obstacle>>,
     mut power: Single<(&mut PlayerPower, &mut PlayerHeat)>,
 ) {
     for (_entity, colliding) in &colliders {
@@ -100,15 +118,44 @@ fn collide_obstacles(
         }
 
         for collider in colliding.iter() {
-            if obstacles.get(*collider).is_ok() {
+            if let Ok(tx) = obstacles.get(*collider) {
                 power.0.0 = 0.0;
                 power.1.0 = (power.1.0 + 30.0).clamp(0.0, 100.0);
 
-                commands.entity(*collider).remove::<Sensor>();
-                commands.entity(*collider).remove::<Collider>();
-                commands.entity(*collider).remove::<RigidBody>();
+                // create a particle effect
+                let mut new_tx = tx.translation.clone();
+                new_tx.z = 0.2;
+
+                let effect = asset_server.load("particles/asteroid_hit.ron");
+
+                commands.spawn((
+                    AsteroidDebris,
+                    Transform::from_translation(new_tx),
+                    ParticleSpawner::default(),
+                    ParticleEffectHandle(effect),
+                    ParticleSpawnerState::default(),
+                    OneShot::Despawn,
+                    NoAutoAabb,
+                ));
+
+                // destroy obstacle
+                commands.entity(*collider).despawn();
             }
         }
-        if colliding.iter().any(|e| obstacles.get(*e).is_ok()) {}
+    }
+}
+
+fn update_debris_gravity_direction(
+    mut commands: Commands,
+    mut particles: Query<(Entity, &Transform, &mut ParticleEffectInstance), With<AsteroidDebris>>,
+) {
+    for (entity, tx, mut maybe_effect) in &mut particles {
+        info!("Setting gravity on particles");
+        let direction = -tx.translation;
+        if let Some(effect) = maybe_effect.0.as_mut() {
+            effect.gravity_direction = Some(Rval::new(direction.truncate(), 0.0));
+        }
+
+        commands.entity(entity).remove::<AsteroidDebris>();
     }
 }
