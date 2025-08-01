@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::screens::Screen;
+use crate::{materials::SunMaterial, screens::Screen};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Sun>();
@@ -22,10 +22,16 @@ impl Default for Sun {
 fn spawn_sun(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut materials: ResMut<Assets<SunMaterial>>,
 ) {
     let sun = Sun::default();
-    let mesh = meshes.add(Circle::new(sun.radius));
-    let color = Color::hsl(30.0, 0.95, 0.7);
-    commands.spawn((Mesh2d(mesh), MeshMaterial2d(materials.add(color)), sun));
+    let mesh = meshes.add(Rectangle::new(
+        2.0 * sun.radius + 50.0,
+        2.0 * sun.radius + 50.0,
+    ));
+    commands.spawn((
+        Mesh2d(mesh),
+        MeshMaterial2d(materials.add(SunMaterial::default())),
+        sun,
+    ));
 }
