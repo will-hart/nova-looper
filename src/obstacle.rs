@@ -30,7 +30,7 @@ fn periodically_spawn_obstacles(
         return;
     }
 
-    *timer = thread_rng().gen_range(0.7..1.0);
+    *timer = thread_rng().gen_range(0.4..0.9);
     let radius = thread_rng().gen_range(10.0..(MAX_PLAYER_RADIUS * 0.6));
     let theta = player.theta + std::f32::consts::PI;
     commands.queue(SpawnObstacle {
@@ -72,7 +72,7 @@ fn spawn_obstacle(
         Obstacle,
         Transform::from_translation(Vec3::new(radius * theta.sin(), radius * theta.cos(), 0.0)),
         RigidBody::Kinematic,
-        Collider::circle(16.0),
+        Collider::circle(7.5),
         Sensor,
         StateScoped(Screen::Gameplay),
         DestroyAt(config.destroy_at),
