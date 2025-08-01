@@ -1,5 +1,5 @@
 use bevy::{
-    color::palettes::tailwind::{AMBER_400, EMERALD_400},
+    color::palettes::{css::WHITE, tailwind::EMERALD_400},
     prelude::*,
     render::render_resource::AsBindGroup,
 };
@@ -139,7 +139,7 @@ fn spawn_health_bar(
                     ..default()
                 },
                 MaterialNode(ui_materials.add(UiProgressBarMaterial {
-                    color: AMBER_400.to_vec4(),
+                    color: WHITE.to_vec4(),
                     slider: Vec4::splat(0.4),
                     border_color: LinearRgba::WHITE.to_vec4(),
                 })),

@@ -72,7 +72,7 @@ fn spawn_obstacle(
         Obstacle,
         Transform::from_translation(Vec3::new(radius * theta.sin(), radius * theta.cos(), 0.0)),
         RigidBody::Kinematic,
-        Collider::circle(7.5),
+        Collider::circle(7.0),
         Sensor,
         StateScoped(Screen::Gameplay),
         DestroyAt(config.destroy_at),

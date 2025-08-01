@@ -92,7 +92,7 @@ fn spawn_player(
         PlayerHeat::default(),
         ItemPosition::default(),
         RigidBody::Kinematic,
-        Collider::capsule(5.0, 10.0),
+        Collider::capsule(4.5, 9.0),
         Sensor,
         CollidingEntities::default(),
     ));

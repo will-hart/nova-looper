@@ -13,7 +13,7 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Asset, TypePath, AsBindGroup, ShaderType, Debug, Clone)]
 #[uniform(0, SunMaterial)]
 pub struct SunMaterial {
-    color: LinearRgba,
+    color: Vec4,
     thickness: f32,
     fill: u32,
 }
@@ -33,7 +33,7 @@ impl Material2d for SunMaterial {
 impl Default for SunMaterial {
     fn default() -> Self {
         Self {
-            color: SUN_COLOUR,
+            color: SUN_COLOUR.to_srgba().to_vec4(),
             thickness: 25.0,
             fill: 1,
         }
