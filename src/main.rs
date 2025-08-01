@@ -9,7 +9,9 @@ mod audio;
 mod dev_tools;
 mod materials;
 mod menus;
+mod player;
 mod screens;
+mod sun;
 mod theme;
 
 use bevy::{asset::AssetMetaCheck, prelude::*};
@@ -51,7 +53,9 @@ impl Plugin for AppPlugin {
             dev_tools::plugin,
             materials::plugin,
             menus::plugin,
+            player::plugin,
             screens::plugin,
+            sun::plugin,
             theme::plugin,
         ));
 
