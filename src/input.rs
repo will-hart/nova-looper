@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    consts::{MAGIC_MOVEMENT_ACCEL_SCALE, MAGIC_MOVEMENT_SCALE, MAX_PLAYER_RADIUS},
+    consts::{MAGIC_MOVEMENT_ACCEL_SCALE, MAX_PLAYER_RADIUS, PLAYER_RADIUS_CHANGE_SPEED},
     player::{ItemPosition, Player},
     screens::Screen,
 };
@@ -29,6 +29,6 @@ fn control_player(
 
     delta.0 = delta.0.clamp(-1.0, 1.0);
 
-    player.radius = (player.radius + delta.0 * time.delta_secs() * MAGIC_MOVEMENT_SCALE)
+    player.radius = (player.radius + delta.0 * time.delta_secs() * PLAYER_RADIUS_CHANGE_SPEED)
         .clamp(0.5, MAX_PLAYER_RADIUS);
 }

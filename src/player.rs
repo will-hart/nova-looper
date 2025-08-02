@@ -28,7 +28,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay), spawn_player);
     app.add_systems(
         PreUpdate,
-        (update_player_item_position, set_player_position)
+        (update_player_theta, set_player_position)
             .chain()
             .run_if(in_state(Screen::Gameplay)),
     );
@@ -138,11 +138,9 @@ fn spawn_player(
     ));
 }
 
-fn update_player_item_position(
-    time: Res<Time>,
-    mut player: Single<&mut ItemPosition, With<Player>>,
-) {
-    player.theta = player.speed * time.elapsed_secs();
+fn update_player_theta(time: Res<Time>, mut player: Single<&mut ItemPosition, With<Player>>) {
+    let multiplier = if player.radius < 1.0 { 1.5 } else { 1.0 };
+    player.theta += player.speed * time.delta_secs() * multiplier;
 }
 
 fn set_player_position(
