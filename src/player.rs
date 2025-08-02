@@ -1,7 +1,8 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
 use bevy_enoki::{
-    NoAutoAabb, ParticleEffectHandle, ParticleSpawner, prelude::ParticleSpawnerState,
+    NoAutoAabb, ParticleEffectHandle, ParticleSpawner,
+    prelude::{ParticleSpawnerState, SpriteParticle2dMaterial},
 };
 
 use crate::{
@@ -89,6 +90,7 @@ fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
+    mut particle_materials: ResMut<Assets<SpriteParticle2dMaterial>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let player_mesh = meshes.add(Triangle2d::new(
@@ -98,6 +100,11 @@ fn spawn_player(
     ));
 
     let color = Color::hsl(142.0, 0.95, 0.97);
+    let particle_sprite = particle_materials.add(SpriteParticle2dMaterial::new(
+        asset_server.load("particles/circle.png"),
+        1,
+        1,
+    ));
 
     commands.spawn((
         Mesh2d(player_mesh),
@@ -114,7 +121,7 @@ fn spawn_player(
         CollidingEntities::default(),
         children![(
             Transform::from_translation(Vec3::new(0.0, 0.0, 0.1)),
-            ParticleSpawner::default(),
+            ParticleSpawner(particle_sprite),
             ParticleEffectHandle(asset_server.load("particles/rocket_trail.ron")),
             ParticleSpawnerState::default(),
             NoAutoAabb,
