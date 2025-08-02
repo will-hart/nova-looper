@@ -54,7 +54,7 @@ impl Plugin for AppPlugin {
                 })
                 .set(WindowPlugin {
                     primary_window: Window {
-                        title: "Flare".to_string(),
+                        title: "Nova Looper".to_string(),
                         fit_canvas_to_parent: true,
                         ..default()
                     }
