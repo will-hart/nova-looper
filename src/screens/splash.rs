@@ -6,7 +6,7 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{AppSystems, screens::Screen, theme::prelude::*};
+use crate::{AppSystems, consts::SPLASH_BACKGROUND_COLOR, screens::Screen, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     // Spawn splash screen.
@@ -44,7 +44,6 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-const SPLASH_BACKGROUND_COLOR: Color = Color::srgb(0.057, 0.057, 0.057);
 const SPLASH_DURATION_SECS: f32 = 1.8;
 const SPLASH_FADE_DURATION_SECS: f32 = 0.6;
 

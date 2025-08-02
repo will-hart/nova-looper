@@ -1,5 +1,8 @@
 use bevy::color::Color;
 
+// The clear colour
+pub const SPLASH_BACKGROUND_COLOR: Color = Color::srgb(0.057, 0.057, 0.057);
+
 /// The speed the player starts with
 pub const PLAYER_STARTING_SPEED: f32 = 0.45;
 
