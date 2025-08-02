@@ -1,6 +1,6 @@
 use assets::PlayerAssets;
 use avian2d::prelude::*;
-use bevy::prelude::*;
+use bevy::{color::palettes::css::WHITE, prelude::*};
 use bevy_enoki::{
     NoAutoAabb, ParticleEffectHandle, ParticleSpawner,
     prelude::{ParticleSpawnerState, SpriteParticle2dMaterial},
@@ -18,8 +18,10 @@ use crate::{
 mod assets;
 
 pub(super) fn plugin(app: &mut App) {
+    app.register_type::<ItemPosition>();
     app.register_type::<Player>();
     app.register_type::<PlayerPower>();
+    app.register_type::<ShieldAlarm>();
 
     app.add_plugins(assets::plugin);
 
@@ -202,7 +204,7 @@ fn shield_decay(time: Res<Time>, mut player: Single<(&ItemPosition, &mut PlayerS
 
 #[derive(Resource, Debug, Reflect)]
 #[reflect(Resource)]
-pub struct ShieldAlarm(Entity);
+pub struct ShieldAlarm(Entity, Entity);
 
 fn shield_monitor(
     mut commands: Commands,
@@ -224,10 +226,44 @@ fn shield_monitor(
                     StateScoped(Screen::Gameplay),
                 ))
                 .id();
-            commands.insert_resource(ShieldAlarm(alarm));
+            let text = commands
+                .spawn((
+                    Node {
+                        position_type: PositionType::Absolute,
+                        top: Val::ZERO,
+                        left: Val::ZERO,
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(100.0),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    children![(
+                        Node {
+                            position_type: PositionType::Relative,
+                            top: Val::Px(25.0),
+                            ..default()
+                        },
+                        Text::new("SHIELD LOW"),
+                        TextLayout {
+                            justify: JustifyText::Center,
+                            ..default()
+                        },
+                        TextFont {
+                            font_size: 12.0,
+                            ..default()
+                        },
+                        TextColor(WHITE.into()),
+                    )],
+                ))
+                .id();
+
+            commands.insert_resource(ShieldAlarm(alarm, text));
         }
     } else if maybe_alarm.is_some() {
-        commands.entity(maybe_alarm.unwrap().0).despawn();
+        let alarm = maybe_alarm.unwrap();
+        commands.entity(alarm.0).despawn();
+        commands.entity(alarm.1).despawn();
         commands.remove_resource::<ShieldAlarm>();
     }
 }
