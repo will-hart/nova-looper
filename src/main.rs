@@ -18,6 +18,7 @@ pub(crate) use player::PlayerAssets;
 mod score;
 mod screens;
 mod sun;
+mod supernova;
 mod theme;
 pub(crate) mod utils;
 
@@ -81,6 +82,7 @@ impl Plugin for AppPlugin {
             score::plugin,
             screens::plugin,
             sun::plugin,
+            supernova::plugin,
             theme::plugin,
             utils::plugin,
         ));
