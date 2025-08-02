@@ -1,24 +1,38 @@
-use bevy::{dev_tools::states::log_transitions, prelude::*};
+use bevy::{
+    color::palettes::css::{RED, WHITE},
+    dev_tools::states::log_transitions,
+    prelude::*,
+};
 use bevy_seedling::sample::SamplePlayer;
 
-use crate::{MusicAssets, screens::Screen};
+use crate::{
+    MusicAssets,
+    consts::{INNER_SUN_COLOUR, SPLASH_BACKGROUND_COLOR, SUN_COLOUR},
+    materials::{StarfieldMaterial, SunMaterial},
+    player::Player,
+    screens::Screen,
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_sub_state::<Nova>();
     app.add_systems(Update, log_transitions::<Nova>);
-
-    app.add_systems(Update, tick_nova_timer.run_if(in_state(Nova::Idle)));
+    app.add_systems(
+        Update,
+        tick_nova_timer.run_if(resource_exists::<NovaTimer>.and(state_exists::<Nova>)),
+    );
 
     app.add_systems(OnEnter(Nova::Idle), on_start_idle);
     app.add_systems(OnExit(Nova::Idle), on_finish_idle);
 
     app.add_systems(OnEnter(Nova::BuildingUp), on_start_buildup);
+    app.add_systems(Update, during_buildup.run_if(in_state(Nova::BuildingUp)));
     app.add_systems(OnExit(Nova::BuildingUp), on_finish_buildup);
 
     app.add_systems(OnEnter(Nova::DuringNova), on_start_during);
     app.add_systems(OnExit(Nova::DuringNova), on_finish_during);
 
     app.add_systems(OnEnter(Nova::PostNova), on_start_post);
+    app.add_systems(Update, during_post.run_if(in_state(Nova::PostNova)));
     app.add_systems(OnExit(Nova::PostNova), on_finish_post);
 }
 
@@ -60,6 +74,7 @@ fn tick_nova_timer(
 ) {
     timer.0.tick(time.delta());
     if timer.0.just_finished() {
+        info!("Nova timer pinged!");
         next_nova_state.set(state.next_state());
     }
 }
@@ -81,13 +96,41 @@ fn on_finish_idle() {
 /* NOVA BUILDING UP */
 
 fn on_start_buildup(mut commands: Commands, music_assets: Res<MusicAssets>) {
-    commands.insert_resource(NovaTimer(Timer::from_seconds(18.5, TimerMode::Once)));
+    commands.insert_resource(NovaTimer(Timer::from_seconds(12.5, TimerMode::Once)));
     commands.spawn(SamplePlayer::new(music_assets.supernova.clone()));
 }
 
-fn on_finish_buildup() {
-    //
+fn during_buildup(
+    timer: Res<NovaTimer>,
+    mut starfield_mats: ResMut<Assets<StarfieldMaterial>>,
+    mut player_mats: ResMut<Assets<ColorMaterial>>,
+    mut sun_mats: ResMut<Assets<SunMaterial>>,
+    starfield: Single<&mut MeshMaterial2d<StarfieldMaterial>>,
+    player: Single<&mut MeshMaterial2d<ColorMaterial>, With<Player>>,
+    sun: Single<&mut MeshMaterial2d<SunMaterial>>,
+) {
+    let counter = 1.0 - 2.0 * timer.0.fraction_remaining();
+
+    let starfield_col = SPLASH_BACKGROUND_COLOR.mix(&Color::Srgba(WHITE), counter);
+    let player_col = Color::Srgba(WHITE).mix(&Color::Srgba(RED), counter);
+    let sun_outer = SUN_COLOUR.mix(&Color::Srgba(WHITE), counter);
+    let sun_inner = INNER_SUN_COLOUR.mix(&Color::Srgba(WHITE), counter);
+
+    if let Some(material) = starfield_mats.get_mut(&starfield.0) {
+        material.background = starfield_col.into();
+    }
+
+    if let Some(material) = player_mats.get_mut(&player.0) {
+        material.color = player_col;
+    }
+
+    if let Some(material) = sun_mats.get_mut(&sun.0) {
+        material.inner_color = sun_inner.to_srgba().to_vec4();
+        material.color = sun_outer.to_srgba().to_vec4();
+    }
 }
+
+fn on_finish_buildup() {}
 
 /* NOVA DURING */
 
@@ -103,6 +146,37 @@ fn on_finish_during() {
 
 fn on_start_post(mut commands: Commands) {
     commands.insert_resource(NovaTimer(Timer::from_seconds(5.0, TimerMode::Once)));
+}
+
+fn during_post(
+    timer: Res<NovaTimer>,
+    mut starfield_mats: ResMut<Assets<StarfieldMaterial>>,
+    mut player_mats: ResMut<Assets<ColorMaterial>>,
+    mut sun_mats: ResMut<Assets<SunMaterial>>,
+    starfield: Single<&mut MeshMaterial2d<StarfieldMaterial>>,
+    player: Single<&mut MeshMaterial2d<ColorMaterial>, With<Player>>,
+    sun: Single<&mut MeshMaterial2d<SunMaterial>>,
+) {
+    let counter = 1.0 - timer.0.fraction_remaining();
+
+    let starfield_col = WHITE.mix(&SPLASH_BACKGROUND_COLOR.to_srgba(), counter);
+    let player_col = Color::Srgba(RED).mix(&Color::Srgba(WHITE), counter);
+    let sun_outer = WHITE.mix(&SUN_COLOUR.to_srgba(), counter);
+
+    let sun_inner = WHITE.mix(&INNER_SUN_COLOUR.to_srgba(), counter);
+
+    if let Some(material) = starfield_mats.get_mut(&starfield.0) {
+        material.background = starfield_col.into();
+    }
+
+    if let Some(material) = player_mats.get_mut(&player.0) {
+        material.color = player_col;
+    }
+
+    if let Some(material) = sun_mats.get_mut(&sun.0) {
+        material.inner_color = sun_inner.to_vec4();
+        material.color = sun_outer.to_vec4();
+    }
 }
 
 fn on_finish_post() {

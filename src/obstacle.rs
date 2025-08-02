@@ -13,6 +13,7 @@ use crate::{
     player::{ItemPosition, Player, PlayerPower, PlayerShield},
     screens::Screen,
     sun::Sun,
+    supernova::Nova,
     utils::DestroyAt,
 };
 
@@ -23,7 +24,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            periodically_spawn_obstacles,
+            periodically_spawn_obstacles.run_if(in_state(Nova::Idle)),
             collide_obstacles,
             update_debris_gravity_direction,
         ),
@@ -118,7 +119,7 @@ pub struct AsteroidDebris;
 
 fn collide_obstacles(
     mut commands: Commands,
-    player_assets: Res<PlayerAssets>,
+    player_assets: Option<Res<PlayerAssets>>,
     asset_server: Res<AssetServer>,
     colliders: Query<(Entity, &CollidingEntities)>,
     obstacles: Query<&Transform, With<Obstacle>>,
@@ -153,7 +154,9 @@ fn collide_obstacles(
                 // destroy obstacle
                 commands.entity(*collider).despawn();
 
-                commands.spawn(SamplePlayer::new(player_assets.obstacle_hit.clone()));
+                if let Some(player_assets) = &player_assets {
+                    commands.spawn(SamplePlayer::new(player_assets.obstacle_hit.clone()));
+                }
             }
         }
     }

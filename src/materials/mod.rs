@@ -5,6 +5,7 @@ mod starfield;
 mod sun;
 
 pub use power_bar::BarDataSource;
+pub use starfield::StarfieldMaterial;
 pub use sun::SunMaterial;
 
 pub(super) fn plugin(app: &mut App) {

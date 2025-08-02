@@ -22,8 +22,8 @@ pub(super) fn plugin(app: &mut App) {
 pub struct StarfieldMaterial {
     position: Vec2,
     seeds: Vec2,
-    background: LinearRgba,
-    foreground: LinearRgba,
+    pub background: LinearRgba,
+    pub foreground: LinearRgba,
 }
 
 impl<'a> From<&'a StarfieldMaterial> for StarfieldMaterial {

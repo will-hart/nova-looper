@@ -129,7 +129,7 @@ fn spawn_player(
         Sensor,
         CollidingEntities::default(),
         children![(
-            Transform::from_translation(Vec3::new(0.0, 0.0, 0.1)),
+            Transform::from_translation(Vec3::new(0.0, 0.0, -0.3)),
             ParticleSpawner(particle_sprite),
             ParticleEffectHandle(asset_server.load("particles/rocket_trail.ron")),
             ParticleSpawnerState::default(),
