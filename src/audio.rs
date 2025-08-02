@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_seedling::sample::{Sample, SamplePlayer};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Music>();
@@ -20,8 +21,8 @@ pub struct Music;
 
 /// A music audio instance.
 #[expect(unused)]
-pub fn music(handle: Handle<AudioSource>) -> impl Bundle {
-    (AudioPlayer(handle), PlaybackSettings::LOOP, Music)
+pub fn music(handle: Handle<Sample>) -> impl Bundle {
+    (SamplePlayer::new(handle).looping(), Music)
 }
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
@@ -33,8 +34,8 @@ pub fn music(handle: Handle<AudioSource>) -> impl Bundle {
 pub struct SoundEffect;
 
 /// A sound effect audio instance.
-pub fn sound_effect(handle: Handle<AudioSource>) -> impl Bundle {
-    (AudioPlayer(handle), PlaybackSettings::DESPAWN, SoundEffect)
+pub fn sound_effect(handle: Handle<Sample>) -> impl Bundle {
+    (SamplePlayer::new(handle), SoundEffect)
 }
 
 /// [`GlobalVolume`] doesn't apply to already-running audio entities, so this system will update them.

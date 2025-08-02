@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_seedling::sample::Sample;
 
 use crate::{asset_tracking::LoadResource, audio::sound_effect};
 
@@ -43,9 +44,9 @@ fn apply_interaction_palette(
 #[reflect(Resource)]
 struct InteractionAssets {
     #[dependency]
-    hover: Handle<AudioSource>,
+    hover: Handle<Sample>,
     #[dependency]
-    click: Handle<AudioSource>,
+    click: Handle<Sample>,
 }
 
 impl FromWorld for InteractionAssets {

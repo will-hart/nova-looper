@@ -29,6 +29,7 @@ use bevy::{
     prelude::*,
 };
 use bevy_enoki::EnokiPlugin;
+use bevy_seedling::prelude::*;
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -59,6 +60,11 @@ impl Plugin for AppPlugin {
                 }),
         );
 
+        // Third-party libs
+        app.add_plugins(PhysicsPlugins::default());
+        app.add_plugins(EnokiPlugin);
+        app.add_plugins(SeedlingPlugin::default());
+
         // Add other plugins.
         app.add_plugins((
             asset_tracking::plugin,
@@ -76,10 +82,6 @@ impl Plugin for AppPlugin {
             theme::plugin,
             utils::plugin,
         ));
-
-        // Third-party libs
-        app.add_plugins(PhysicsPlugins::default());
-        app.add_plugins(EnokiPlugin);
 
         // #[cfg(debug_assertions)]
         // app.add_plugins(PhysicsDebugPlugin::default());
