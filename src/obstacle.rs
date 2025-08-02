@@ -7,7 +7,7 @@ use bevy_enoki::{
 use rand::{Rng, thread_rng};
 
 use crate::{
-    consts::{MAX_PLAYER_RADIUS, SHIELD_COST_ON_OBSTACLE_HIT},
+    consts::{MAX_PLAYER_RADIUS, OBSTACLE_GRAVITY_SCALE, SHIELD_COST_ON_OBSTACLE_HIT},
     player::{ItemPosition, Player, PlayerPower, PlayerShield},
     screens::Screen,
     sun::Sun,
@@ -45,9 +45,9 @@ fn periodically_spawn_obstacles(
 
     let mut rng = thread_rng();
 
-    *timer = rng.gen_range(0.4..0.8);
-    let num_obstacles = rng.gen_range(1..=3);
-    let radius = rng.gen_range(25.0..(MAX_PLAYER_RADIUS * 0.35));
+    *timer = rng.gen_range(0.3..0.7);
+    let num_obstacles = rng.gen_range(1..=4);
+    let radius = rng.gen_range(35.0..(MAX_PLAYER_RADIUS * 0.75));
 
     for _ in 0..num_obstacles {
         let radius = radius + rng.gen_range(-40.0..40.0);
@@ -88,11 +88,13 @@ fn spawn_obstacle(
     let radius = config.radius + sun.radius;
     let theta = config.theta;
 
+    let translation = Vec3::new(radius * theta.sin(), radius * theta.cos(), -1.0);
     commands.spawn((
         Obstacle,
-        Transform::from_translation(Vec3::new(radius * theta.sin(), radius * theta.cos(), 0.0)),
-        RigidBody::Kinematic,
+        Transform::from_translation(translation),
+        RigidBody::Dynamic,
         Collider::circle(7.0),
+        LinearVelocity(translation.truncate().normalize() * OBSTACLE_GRAVITY_SCALE),
         Sensor,
         StateScoped(Screen::Gameplay),
         DestroyAt(config.destroy_at),
@@ -126,7 +128,7 @@ fn collide_obstacles(
 
         for collider in colliding.iter() {
             if let Ok(tx) = obstacles.get(*collider) {
-                power.0.0 = 0.0;
+                power.0.0 = (power.0.0 - 25.0).clamp(0.0, 100.0);
                 power.1.0 = (power.1.0 - SHIELD_COST_ON_OBSTACLE_HIT).clamp(0.0, 100.0);
 
                 // create a particle effect
@@ -157,7 +159,7 @@ fn update_debris_gravity_direction(
     mut particles: Query<(Entity, &Transform, &mut ParticleEffectInstance), With<AsteroidDebris>>,
 ) {
     for (entity, tx, mut maybe_effect) in &mut particles {
-        info!("Setting gravity on particles");
+        // info!("Setting gravity on particles");
         let direction = -tx.translation;
         if let Some(effect) = maybe_effect.0.as_mut() {
             effect.gravity_direction = Some(Rval::new(direction.truncate(), 0.0));
