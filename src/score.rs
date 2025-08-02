@@ -22,8 +22,6 @@ pub(super) fn plugin(app: &mut App) {
         )
             .distributive_run_if(resource_exists::<Score>),
     );
-
-    app.add_systems(OnExit(Screen::Gameplay), despawn_score);
 }
 
 #[derive(Resource, Debug, Reflect)]
@@ -92,10 +90,6 @@ fn update_score_text(score: Res<Score>, mut text: Single<&mut Text, With<ScoreMa
 
 fn update_multiplier_text(score: Res<Score>, mut text: Single<&mut Text, With<MultiplierMarker>>) {
     text.0 = format!("{:}x", score.multiplier);
-}
-
-fn despawn_score(mut commands: Commands) {
-    commands.remove_resource::<Score>();
 }
 
 fn increase_multiplier(mut score: ResMut<Score>, mut power: Single<&mut PlayerPower>) {
