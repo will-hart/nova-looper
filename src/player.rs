@@ -1,9 +1,11 @@
+use assets::PlayerAssets;
 use avian2d::prelude::*;
 use bevy::prelude::*;
 use bevy_enoki::{
     NoAutoAabb, ParticleEffectHandle, ParticleSpawner,
     prelude::{ParticleSpawnerState, SpriteParticle2dMaterial},
 };
+use bevy_seedling::sample::SamplePlayer;
 
 use crate::{
     consts::{MAX_PLAYER_RADIUS, PLAYER_STARTING_SPEED},
@@ -13,9 +15,13 @@ use crate::{
     sun::Sun,
 };
 
+mod assets;
+
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Player>();
     app.register_type::<PlayerPower>();
+
+    app.add_plugins(assets::plugin);
 
     app.add_systems(OnEnter(Screen::Gameplay), spawn_player);
     app.add_systems(
@@ -89,8 +95,9 @@ impl Default for ItemPosition {
 fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut meshes: ResMut<Assets<Mesh>>,
+    player_assets: Res<PlayerAssets>,
     mut particle_materials: ResMut<Assets<SpriteParticle2dMaterial>>,
+    mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let player_mesh = meshes.add(Triangle2d::new(
@@ -101,7 +108,7 @@ fn spawn_player(
 
     let color = Color::hsl(142.0, 0.95, 0.97);
     let particle_sprite = particle_materials.add(SpriteParticle2dMaterial::new(
-        asset_server.load("particles/circle.png"),
+        player_assets.rocket_trail_particle.clone(),
         1,
         1,
     ));
@@ -193,8 +200,34 @@ fn shield_decay(time: Res<Time>, mut player: Single<(&ItemPosition, &mut PlayerS
     player.1.0 = (player.1.0 + time.delta_secs() * rate.clamp(-10.0, 10.0)).clamp(0.0, 100.0);
 }
 
-fn shield_monitor(mut next_state: ResMut<NextState<Screen>>, shield: Single<&PlayerShield>) {
+#[derive(Resource, Debug, Reflect)]
+#[reflect(Resource)]
+pub struct ShieldAlarm(Entity);
+
+fn shield_monitor(
+    mut commands: Commands,
+    maybe_alarm: Option<Res<ShieldAlarm>>,
+    player_assets: Res<PlayerAssets>,
+    mut next_state: ResMut<NextState<Screen>>,
+    shield: Single<&PlayerShield>,
+) {
     if shield.0 < 0.1 {
         next_state.set(Screen::GameOver);
+        return;
+    }
+
+    if shield.0 < 25.0 {
+        if maybe_alarm.is_none() {
+            let alarm = commands
+                .spawn((
+                    SamplePlayer::new(player_assets.shield_alert.clone()).looping(),
+                    StateScoped(Screen::Gameplay),
+                ))
+                .id();
+            commands.insert_resource(ShieldAlarm(alarm));
+        }
+    } else if maybe_alarm.is_some() {
+        commands.entity(maybe_alarm.unwrap().0).despawn();
+        commands.remove_resource::<ShieldAlarm>();
     }
 }
