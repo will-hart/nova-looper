@@ -1,6 +1,7 @@
 #import bevy_sprite::mesh2d_vertex_output::VertexOutput
 
 struct Material {
+    inner_color: vec4f,
     color: vec4f,
     // can use this to blur
     blur_start: f32,
@@ -14,5 +15,9 @@ fn fragment(mesh: VertexOutput) -> @location(0) vec4<f32> {
     let dist = length(pos);
 
     if dist > 1.0 { discard; }
-    return vec4<f32>(material.color.rgb, 1.0 - smoothstep(material.blur_start, 1.0, dist));
+
+    return vec4<f32>(
+       mix(material.inner_color.rgb, material.color.rgb, dist),
+       1.0 - smoothstep(material.blur_start, 1.0, dist)
+    );
 }

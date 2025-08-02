@@ -4,7 +4,7 @@ use bevy::{
     sprite::{AlphaMode2d, Material2d, Material2dPlugin},
 };
 
-use crate::consts::SUN_COLOUR;
+use crate::consts::{INNER_SUN_COLOUR, SUN_COLOUR};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(Material2dPlugin::<SunMaterial>::default());
@@ -13,6 +13,7 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Asset, TypePath, AsBindGroup, ShaderType, Debug, Clone)]
 #[uniform(0, SunMaterial)]
 pub struct SunMaterial {
+    inner_color: Vec4,
     color: Vec4,
     /// the fraction of the UV coordinate where the sun starts to fade
     /// out. Defaults to 1.0 for now because its doesn't look great.
@@ -38,6 +39,7 @@ impl Material2d for SunMaterial {
 impl Default for SunMaterial {
     fn default() -> Self {
         Self {
+            inner_color: INNER_SUN_COLOUR.to_srgba().to_vec4(),
             color: SUN_COLOUR.to_srgba().to_vec4(),
             blur_start: 1.0,
         }
