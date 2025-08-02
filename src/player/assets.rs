@@ -15,6 +15,8 @@ pub struct PlayerAssets {
     pub(super) rocket_trail_particle: Handle<Image>,
     #[dependency]
     pub(super) shield_alert: Handle<Sample>,
+    #[dependency]
+    pub obstacle_hit: Handle<Sample>,
 }
 
 impl FromWorld for PlayerAssets {
@@ -23,6 +25,7 @@ impl FromWorld for PlayerAssets {
         Self {
             rocket_trail_particle: assets.load("particles/circle.png"),
             shield_alert: assets.load("audio/sound_effects/shield_alert.ogg"),
+            obstacle_hit: assets.load("audio/sound_effects/obstacle_hit.ogg"),
         }
     }
 }

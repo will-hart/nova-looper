@@ -14,6 +14,7 @@ mod materials;
 mod menus;
 mod obstacle;
 mod player;
+pub(crate) use player::PlayerAssets;
 mod score;
 mod screens;
 mod sun;

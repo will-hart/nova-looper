@@ -4,9 +4,11 @@ use bevy_enoki::{
     NoAutoAabb, ParticleEffectHandle, ParticleSpawner,
     prelude::{OneShot, ParticleEffectInstance, ParticleSpawnerState, Rval},
 };
+use bevy_seedling::sample::SamplePlayer;
 use rand::{Rng, thread_rng};
 
 use crate::{
+    PlayerAssets,
     consts::{MAX_PLAYER_RADIUS, OBSTACLE_GRAVITY_SCALE, SHIELD_COST_ON_OBSTACLE_HIT},
     player::{ItemPosition, Player, PlayerPower, PlayerShield},
     screens::Screen,
@@ -116,6 +118,7 @@ pub struct AsteroidDebris;
 
 fn collide_obstacles(
     mut commands: Commands,
+    player_assets: Res<PlayerAssets>,
     asset_server: Res<AssetServer>,
     colliders: Query<(Entity, &CollidingEntities)>,
     obstacles: Query<&Transform, With<Obstacle>>,
@@ -149,6 +152,8 @@ fn collide_obstacles(
 
                 // destroy obstacle
                 commands.entity(*collider).despawn();
+
+                commands.spawn(SamplePlayer::new(player_assets.obstacle_hit.clone()));
             }
         }
     }

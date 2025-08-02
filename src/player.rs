@@ -1,4 +1,3 @@
-use assets::PlayerAssets;
 use avian2d::prelude::*;
 use bevy::{color::palettes::css::WHITE, prelude::*};
 use bevy_enoki::{
@@ -16,6 +15,7 @@ use crate::{
 };
 
 mod assets;
+pub use assets::PlayerAssets;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<ItemPosition>();
