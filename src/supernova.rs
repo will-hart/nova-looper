@@ -31,8 +31,10 @@ pub enum Nova {
     Idle,
     /// When the nova is started but we haven't yet left the star
     BuildingUp,
+    #[expect(clippy::enum_variant_names)]
     /// While the nova is happening and we're travelling to the next star
     DuringNova,
+    #[expect(clippy::enum_variant_names)]
     /// While we're arriving at the next star, before we start skimming
     PostNova,
 }
@@ -48,7 +50,7 @@ impl Nova {
     }
 }
 
-/** SHARED **/
+/* SHARED */
 
 fn tick_nova_timer(
     time: Res<Time>,
@@ -62,7 +64,7 @@ fn tick_nova_timer(
     }
 }
 
-/** NOVA IDLE **/
+/* NOVA IDLE */
 
 #[derive(Resource, Reflect)]
 #[reflect(Resource)]
@@ -76,7 +78,7 @@ fn on_finish_idle() {
     //
 }
 
-/** NOVA BUILDING UP **/
+/* NOVA BUILDING UP */
 
 fn on_start_buildup(mut commands: Commands, music_assets: Res<MusicAssets>) {
     commands.insert_resource(NovaTimer(Timer::from_seconds(18.5, TimerMode::Once)));
@@ -87,7 +89,7 @@ fn on_finish_buildup() {
     //
 }
 
-/** NOVA DURING **/
+/* NOVA DURING */
 
 fn on_start_during(mut commands: Commands) {
     commands.insert_resource(NovaTimer(Timer::from_seconds(5.0, TimerMode::Once)));
@@ -97,7 +99,7 @@ fn on_finish_during() {
     //
 }
 
-/** NOVA POST **/
+/* NOVA POST */
 
 fn on_start_post(mut commands: Commands) {
     commands.insert_resource(NovaTimer(Timer::from_seconds(5.0, TimerMode::Once)));

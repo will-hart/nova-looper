@@ -19,9 +19,9 @@ pub const MAX_PLAYER_RADIUS: f32 = 800.0;
 pub const MAIN_THEME_COLOR: Color = Color::hsla(21.0, 0.936, 0.51, 1.0);
 
 /// The colour of the sun
-pub const SUN_COLOUR: Color = Color::srgba(3.96863997, 0.37240803, 0.051360063, 1.0);
+pub const SUN_COLOUR: Color = Color::srgba(3.968, 0.372, 0.051, 1.0);
 /// The colour of the middle of the sun
-pub const INNER_SUN_COLOUR: Color = Color::srgba(1.86863997, 0.52240803, 0.021360063, 1.0);
+pub const INNER_SUN_COLOUR: Color = Color::srgba(1.868, 0.522, 0.021, 1.0);
 
 /// The rate the score increases each second
 pub const SCORE_INCREASE_RATE: f32 = 7.0;

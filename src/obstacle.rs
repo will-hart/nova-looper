@@ -135,7 +135,7 @@ fn collide_obstacles(
                 power.1.0 = (power.1.0 - SHIELD_COST_ON_OBSTACLE_HIT).clamp(0.0, 100.0);
 
                 // create a particle effect
-                let mut new_tx = tx.translation.clone();
+                let mut new_tx = tx.translation;
                 new_tx.z = 0.2;
 
                 let effect = asset_server.load("particles/asteroid_hit.ron");
