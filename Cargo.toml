@@ -28,7 +28,8 @@ bevy = { version = "0.16", default-features = false, features = [
     "multi_threaded",
     "png",
     "vorbis",
-    "webgl2"
+    "webgl2",
+    "tonemapping_luts",
 ]}
 bevy_enoki = "0.4"
 rand = "0.8"

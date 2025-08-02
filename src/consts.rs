@@ -15,8 +15,11 @@ pub const MAGIC_MOVEMENT_ACCEL_SCALE: f32 = 12.0;
 /// The maximum radius a player can have relateive the centre of the sun
 pub const MAX_PLAYER_RADIUS: f32 = 800.0;
 
+/// The main theme colour
+pub const MAIN_THEME_COLOR: Color = Color::hsla(21.0, 0.936, 0.51, 1.0);
+
 /// The colour of the sun
-pub const SUN_COLOUR: Color = Color::hsla(21.0, 0.936, 0.51, 1.0);
+pub const SUN_COLOUR: Color = Color::srgba(1.96863997, 0.37240803, 0.051360063, 1.0);
 
 /// The rate the score increases each second
 pub const SCORE_INCREASE_RATE: f32 = 7.0;

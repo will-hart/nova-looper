@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::consts::SUN_COLOUR;
+use crate::consts::MAIN_THEME_COLOR;
 
 /// #ddd369
 pub const LABEL_TEXT: Color = Color::srgb(0.867, 0.827, 0.412);
@@ -11,7 +11,7 @@ pub const HEADER_TEXT: Color = Color::srgb(0.988, 0.984, 0.800);
 /// #ececec
 pub const BUTTON_TEXT: Color = Color::srgb(0.925, 0.925, 0.925);
 /// #4666bf
-pub const BUTTON_BACKGROUND: Color = SUN_COLOUR;
+pub const BUTTON_BACKGROUND: Color = MAIN_THEME_COLOR;
 /// #6299d1
 pub const BUTTON_HOVERED_BACKGROUND: Color = Color::hsla(21.0, 0.836, 0.45, 1.0);
 /// #3d4999
