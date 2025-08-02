@@ -1,61 +1,21 @@
 //! The screen state for the main gameplay.
 
-use bevy::{input::common_conditions::input_just_pressed, prelude::*, ui::Val::*};
+use bevy::prelude::*;
+use bevy_seedling::{prelude::Volume, sample::SamplePlayer};
 
-use crate::{Pause, menus::Menu, screens::Screen};
+use crate::MusicAssets;
+
+use super::Screen;
 
 pub(super) fn plugin(app: &mut App) {
-    // app.add_systems(OnEnter(Screen::Gameplay), spawn_level);
-
-    // Toggle pause on key press.
-    app.add_systems(
-        Update,
-        (
-            (pause, spawn_pause_overlay, open_pause_menu).run_if(
-                in_state(Screen::Gameplay)
-                    .and(in_state(Menu::None))
-                    .and(input_just_pressed(KeyCode::KeyP).or(input_just_pressed(KeyCode::Escape))),
-            ),
-            close_menu.run_if(
-                in_state(Screen::Gameplay)
-                    .and(not(in_state(Menu::None)))
-                    .and(input_just_pressed(KeyCode::KeyP)),
-            ),
-        ),
-    );
-    app.add_systems(OnExit(Screen::Gameplay), (close_menu, unpause));
-    app.add_systems(
-        OnEnter(Menu::None),
-        unpause.run_if(in_state(Screen::Gameplay)),
-    );
+    app.add_systems(OnEnter(Screen::Gameplay), spawn_music);
 }
 
-fn unpause(mut next_pause: ResMut<NextState<Pause>>) {
-    next_pause.set(Pause(false));
-}
-
-fn pause(mut next_pause: ResMut<NextState<Pause>>) {
-    next_pause.set(Pause(true));
-}
-
-fn spawn_pause_overlay(mut commands: Commands) {
+fn spawn_music(mut commands: Commands, music: Res<MusicAssets>) {
     commands.spawn((
-        Name::new("Pause Overlay"),
-        Node {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            ..default()
-        },
-        GlobalZIndex(1),
-        BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.8)),
-        StateScoped(Pause(true)),
+        SamplePlayer::new(music.gameplay.clone())
+            .looping()
+            .with_volume(Volume::Linear(0.4)),
+        StateScoped(Screen::Gameplay),
     ));
-}
-
-fn open_pause_menu(mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Pause);
-}
-
-fn close_menu(mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::None);
 }

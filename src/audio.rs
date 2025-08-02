@@ -1,14 +1,38 @@
 use bevy::prelude::*;
 use bevy_seedling::sample::{Sample, SamplePlayer};
 
+use crate::asset_tracking::LoadResource;
+
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Music>();
     app.register_type::<SoundEffect>();
+
+    app.register_type::<MusicAssets>();
+    app.load_resource::<MusicAssets>();
 
     app.add_systems(
         Update,
         apply_global_volume.run_if(resource_changed::<GlobalVolume>),
     );
+}
+
+#[derive(Resource, Asset, Clone, Reflect)]
+#[reflect(Resource)]
+pub struct MusicAssets {
+    #[dependency]
+    pub(super) menu: Handle<Sample>,
+    #[dependency]
+    pub(super) supernova: Handle<Sample>,
+}
+
+impl FromWorld for MusicAssets {
+    fn from_world(world: &mut World) -> Self {
+        let assets = world.resource::<AssetServer>();
+        Self {
+            menu: assets.load("audio/music/menu.ogg"),
+            supernova: assets.load("audio/music/supernova.ogg"),
+        }
+    }
 }
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the

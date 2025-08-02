@@ -5,6 +5,7 @@
 
 mod asset_tracking;
 mod audio;
+pub(crate) use audio::MusicAssets;
 pub(crate) mod consts;
 #[cfg(feature = "dev")]
 mod dev_tools;
