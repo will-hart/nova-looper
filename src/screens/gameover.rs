@@ -18,7 +18,7 @@ fn spawn_gameover_menu(mut commands: Commands, score: Option<Res<Score>>) {
         children![
             widget::header("Game Over!"),
             widget::label("Your shields were down for too long!"),
-            widget::label(format!("You scored {score:0}!")),
+            widget::label(format!("You scored {score:.0}!")),
             widget::menu_button("Play again", play_again),
             #[cfg(not(target_family = "wasm"))]
             widget::menu_button("Main Menu", return_to_menu),

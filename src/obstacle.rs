@@ -43,15 +43,22 @@ fn periodically_spawn_obstacles(
         return;
     }
 
-    *timer = thread_rng().gen_range(0.4..0.6);
-    let radius = thread_rng().gen_range(20.0..(MAX_PLAYER_RADIUS * 0.35));
-    let theta = player.theta + std::f32::consts::PI;
-    commands.queue(SpawnObstacle {
-        theta,
-        radius,
-        // destroy after one player revolution
-        destroy_at: std::f32::consts::TAU / player.speed + time.elapsed_secs(),
-    });
+    let mut rng = thread_rng();
+
+    *timer = rng.gen_range(0.4..0.8);
+    let num_obstacles = rng.gen_range(1..=3);
+    let radius = rng.gen_range(25.0..(MAX_PLAYER_RADIUS * 0.35));
+
+    for _ in 0..num_obstacles {
+        let radius = radius + rng.gen_range(-40.0..40.0);
+        let theta = player.theta + std::f32::consts::PI + rng.gen_range(-0.04..=0.04);
+        commands.queue(SpawnObstacle {
+            theta,
+            radius,
+            // destroy after one player revolution
+            destroy_at: std::f32::consts::TAU / player.speed + time.elapsed_secs(),
+        });
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
