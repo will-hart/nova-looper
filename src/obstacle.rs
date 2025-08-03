@@ -77,17 +77,17 @@ fn periodically_spawn_obstacles(
 
     let mut rng = thread_rng();
 
-    *timer = rng.gen_range(0.3..0.7);
-    let num_obstacles = rng.gen_range(1..=4);
+    *timer = rng.gen_range(0.1..0.4);
+    let num_obstacles = rng.gen_range(1..=3);
     let radius = rng.gen_range(-75.0..(MAX_PLAYER_RADIUS * 0.5));
 
     for _ in 0..num_obstacles {
-        let radius = radius + rng.gen_range(-40.0..40.0);
-        let theta = player.theta + std::f32::consts::PI + rng.gen_range(-0.04..=0.04);
+        let radius = radius + rng.gen_range(-60.0..20.0);
+        let theta = player.theta + std::f32::consts::PI + rng.gen_range(-0.05..=0.05);
         commands.queue(SpawnObstacle {
             theta,
             radius,
-            speed: rng.gen_range(-30.0..-18.0),
+            speed: rng.gen_range(-30.0..-15.0),
             // destroy after one player revolution
             destroy_at: std::f32::consts::TAU / player.speed + time.elapsed_secs(),
         });
@@ -116,7 +116,7 @@ fn spawn_obstacle(
     sun: Single<&Sun>,
 ) {
     // info!("Spawning obstacle");
-    let mesh = meshes.add(Rectangle::new(9.0, 15.0));
+    let mesh = meshes.add(Rectangle::new(5.0, 15.0));
     let color = Color::srgba(4.0, 1.60, 0.07, 1.0);
 
     let radius = config.radius + sun.radius;
@@ -130,7 +130,7 @@ fn spawn_obstacle(
             translation.truncate().to_angle() + std::f32::consts::FRAC_PI_2,
         )),
         RigidBody::Dynamic,
-        Collider::rectangle(8.0, 14.0),
+        Collider::rectangle(4.0, 14.0),
         LinearVelocity(-translation.truncate().normalize() * config.speed),
         Sensor,
         StateScoped(Screen::Gameplay),
