@@ -79,7 +79,7 @@ fn periodically_spawn_obstacles(
 
     *timer = rng.gen_range(0.3..0.7);
     let num_obstacles = rng.gen_range(1..=4);
-    let radius = rng.gen_range(35.0..(MAX_PLAYER_RADIUS * 0.75));
+    let radius = rng.gen_range(-75.0..(MAX_PLAYER_RADIUS * 0.45));
 
     for _ in 0..num_obstacles {
         let radius = radius + rng.gen_range(-40.0..40.0);
@@ -114,19 +114,22 @@ fn spawn_obstacle(
     sun: Single<&Sun>,
 ) {
     // info!("Spawning obstacle");
-    let mesh = meshes.add(Rhombus::new(15.0, 15.0));
-    let color = Color::hsl(76.0, 0.30, 0.47);
+    let mesh = meshes.add(Rectangle::new(9.0, 15.0));
+    let color = Color::srgba(4.0, 1.60, 0.07, 1.0);
 
     let radius = config.radius + sun.radius;
     let theta = config.theta;
-
     let translation = Vec3::new(radius * theta.sin(), radius * theta.cos(), -1.0);
+
     commands.spawn((
         Obstacle,
-        Transform::from_translation(translation),
+        Transform::from_translation(translation).with_rotation(Quat::from_axis_angle(
+            Vec3::Z,
+            translation.truncate().to_angle() + std::f32::consts::FRAC_PI_2,
+        )),
         RigidBody::Dynamic,
-        Collider::circle(7.0),
-        LinearVelocity(translation.truncate().normalize() * OBSTACLE_GRAVITY_SCALE),
+        Collider::rectangle(8.0, 14.0),
+        LinearVelocity(-translation.truncate().normalize() * OBSTACLE_GRAVITY_SCALE),
         Sensor,
         StateScoped(Screen::Gameplay),
         DestroyAt(config.destroy_at),
