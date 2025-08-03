@@ -120,7 +120,7 @@ fn spawn_player(
         Vec2::new(5.0, -5.0),
     ));
 
-    let color = Color::hsl(142.0, 0.95, 0.97);
+    let color = Color::srgba(3.0, 3.0, 3.0, 1.0);
     let particle_sprite = particle_materials.add(SpriteParticle2dMaterial::new(
         player_assets.rocket_trail_particle.clone(),
         1,
