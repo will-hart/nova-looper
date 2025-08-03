@@ -1,8 +1,9 @@
 //! The game over screen that appears after the player loses.
 
 use bevy::prelude::*;
+use bevy_seedling::sample::SamplePlayer;
 
-use crate::{DeathReason, score::Score, screens::Screen, theme::widget};
+use crate::{DeathReason, PlayerAssets, score::Score, screens::Screen, theme::widget};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::GameOver), spawn_gameover_menu);
@@ -10,9 +11,12 @@ pub(super) fn plugin(app: &mut App) {
 
 fn spawn_gameover_menu(
     mut commands: Commands,
+    player_assets: Res<PlayerAssets>,
     score: Option<Res<Score>>,
     death_reason: Res<DeathReason>,
 ) {
+    commands.spawn(SamplePlayer::new(player_assets.end_game.clone()));
+
     let score = score.map(|s| s.score).unwrap_or_default();
 
     commands.spawn((

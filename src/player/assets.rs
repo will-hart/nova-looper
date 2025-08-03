@@ -21,6 +21,8 @@ pub struct PlayerAssets {
     pub nova_alert: Handle<Sample>,
     #[dependency]
     pub multiplier_up: Handle<Sample>,
+    #[dependency]
+    pub end_game: Handle<Sample>,
 }
 
 impl FromWorld for PlayerAssets {
@@ -32,6 +34,7 @@ impl FromWorld for PlayerAssets {
             obstacle_hit: assets.load("audio/sound_effects/obstacle_hit.ogg"),
             nova_alert: assets.load("audio/sound_effects/nova_alert.ogg"),
             multiplier_up: assets.load("audio/sound_effects/multiplier_up.ogg"),
+            end_game: assets.load("audio/sound_effects/end_game.ogg"),
         }
     }
 }
