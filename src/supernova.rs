@@ -25,9 +25,13 @@ const AFTER_PHASE: f32 = 2.0;
 const BLOOMED_WHITE: Color = Color::srgba(3.0, 3.0, 3.0, 0.0);
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_sub_state::<Nova>();
+    app.add_sub_state::<Nova>()
+        .add_computed_state::<Overworld>();
+
     #[cfg(debug_assertions)]
     app.add_systems(Update, log_transitions::<Nova>);
+    #[cfg(debug_assertions)]
+    app.add_systems(Update, log_transitions::<Overworld>);
     app.add_systems(
         Update,
         tick_nova_timer.run_if(resource_exists::<NovaTimer>.and(state_exists::<Nova>)),
@@ -48,6 +52,8 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, during_after.run_if(in_state(Nova::After)));
     app.add_systems(OnExit(Nova::After), on_finish_after);
 }
+
+/* STATES */
 
 #[derive(SubStates, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 #[source(Screen = Screen::Gameplay)]
@@ -71,6 +77,26 @@ impl Nova {
             Nova::BuildingUp => Nova::During,
             Nova::During => Nova::After,
             Nova::After => Nova::Idle,
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+pub enum Overworld {
+    Sun,
+    Warp,
+}
+
+impl ComputedStates for Overworld {
+    type SourceStates = (Screen, Nova);
+
+    fn compute(sources: Self::SourceStates) -> Option<Self> {
+        match sources {
+            (Screen::Gameplay, Nova::Idle)
+            | (Screen::Gameplay, Nova::BuildingUp)
+            | (Screen::Gameplay, Nova::After) => Some(Overworld::Sun),
+            (Screen::Gameplay, Nova::During) => Some(Overworld::Warp),
+            (_, _) => None,
         }
     }
 }
