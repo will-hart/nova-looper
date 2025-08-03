@@ -3118,7 +3118,7 @@ checksum = "5e0826a989adedc2a244799e823aece04662b66609d96af8dff7ac6df9a8925d"
 
 [[package]]
 name = "nova-looper"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "avian2d",
  "bevy",
