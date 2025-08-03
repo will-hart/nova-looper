@@ -4,6 +4,9 @@ use bevy_enoki::{
     NoAutoAabb, ParticleEffectHandle, ParticleSpawner,
     prelude::{ParticleSpawnerState, SpriteParticle2dMaterial},
 };
+use bevy_polyline::prelude::{
+    Polyline, PolylineBundle, PolylineHandle, PolylineMaterial, PolylineMaterialHandle,
+};
 use bevy_seedling::sample::SamplePlayer;
 
 use crate::{
@@ -17,6 +20,7 @@ use crate::{
 
 mod assets;
 pub use assets::PlayerAssets;
+mod trail;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<ItemPosition>();
@@ -25,7 +29,7 @@ pub(super) fn plugin(app: &mut App) {
     app.register_type::<PlayerPower>();
     app.register_type::<ShieldAlarm>();
 
-    app.add_plugins(assets::plugin);
+    app.add_plugins((assets::plugin, trail::plugin));
 
     app.add_systems(OnEnter(Screen::Gameplay), spawn_player);
     app.add_systems(
@@ -112,6 +116,8 @@ fn spawn_player(
     mut particle_materials: ResMut<Assets<SpriteParticle2dMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
+    mut polylines: ResMut<Assets<Polyline>>,
 ) {
     let player_mesh = meshes.add(Triangle2d::new(
         Vec2::Y * 10.0,
@@ -139,17 +145,33 @@ fn spawn_player(
         Collider::capsule(4.5, 9.0),
         Sensor,
         CollidingEntities::default(),
-        children![(
-            Transform::from_translation(Vec3::new(0.0, 0.0, -0.3)),
-            ParticleSpawner(particle_sprite),
-            ParticleEffectHandle(asset_server.load("particles/rocket_trail.ron")),
-            ParticleSpawnerState {
-                active: false,
+        children![
+            // skimming particles
+            (
+                Transform::from_translation(Vec3::new(0.0, 0.0, -0.3)),
+                ParticleSpawner(particle_sprite),
+                ParticleEffectHandle(asset_server.load("particles/rocket_trail.ron")),
+                ParticleSpawnerState {
+                    active: false,
+                    ..default()
+                },
+                NoAutoAabb,
+                PlayerEffects
+            ),
+            // tail
+            PolylineBundle {
+                polyline: PolylineHandle(polylines.add(Polyline {
+                    vertices: vec![Vec3::ZERO; 30]
+                })),
+                material: PolylineMaterialHandle(polyline_materials.add(PolylineMaterial {
+                    width: 4.0,
+                    color: WHITE.into(),
+                    perspective: false,
+                    depth_bias: -0.1
+                })),
                 ..default()
-            },
-            NoAutoAabb,
-            PlayerEffects
-        )],
+            }
+        ],
     ));
 }
 

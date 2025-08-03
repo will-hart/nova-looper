@@ -33,6 +33,7 @@ use bevy::{
     prelude::*,
 };
 use bevy_enoki::EnokiPlugin;
+use bevy_polyline::PolylinePlugin;
 use bevy_seedling::prelude::*;
 
 fn main() -> AppExit {
@@ -67,6 +68,7 @@ impl Plugin for AppPlugin {
         // Third-party libs
         app.add_plugins(PhysicsPlugins::default());
         app.add_plugins(EnokiPlugin);
+        app.add_plugins(PolylinePlugin);
         app.add_plugins(SeedlingPlugin::default());
 
         // Add other plugins.

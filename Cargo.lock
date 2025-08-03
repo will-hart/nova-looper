@@ -949,6 +949,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_polyline"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "944429f13250e773eb76ae36786dbce097da20664830b431aba513efb7ac2111"
+dependencies = [
+ "bevy",
+ "bitflags 2.9.1",
+ "bytemuck",
+]
+
+[[package]]
 name = "bevy_ptr"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3123,6 +3134,7 @@ dependencies = [
  "avian2d",
  "bevy",
  "bevy_enoki",
+ "bevy_polyline",
  "bevy_seedling",
  "log",
  "rand",

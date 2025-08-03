@@ -32,6 +32,7 @@ bevy = { version = "0.16", default-features = false, features = [
     "tonemapping_luts",
 ]}
 bevy_enoki = "0.4"
+bevy_polyline = "0.12.0"
 bevy_seedling = "0.4"
 rand = "0.8"
 # Compile low-severity logs out of native builds for performance.
