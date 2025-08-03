@@ -102,10 +102,10 @@ fn spawn_main_menu(
     commands.spawn((
         Mesh2d(mesh),
         MeshMaterial2d(materials.add(SunMaterial::default())),
-        StateScoped(Screen::Title),
+        StateScoped(Menu::Main),
         Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)).with_scale(Vec3::splat(0.2)),
         sun,
-        Rotate(0.1),
+        Rotate(0.5),
         children![(
             Mesh2d(player_mesh),
             MeshMaterial2d(color_materials.add(color)),
