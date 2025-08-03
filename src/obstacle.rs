@@ -189,6 +189,7 @@ fn collide_obstacles(
 
                 commands.spawn((
                     AsteroidDebris,
+                    StateScoped(Screen::Gameplay),
                     Transform::from_translation(new_tx),
                     ParticleSpawner::default(),
                     ParticleEffectHandle(effect),
