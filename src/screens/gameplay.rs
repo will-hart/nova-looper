@@ -15,7 +15,8 @@ use crate::{
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnExit(Screen::Splash), spawn_background_music);
+    app.add_systems(OnExit(Screen::Splash), spawn_background_music_pools);
+    app.add_systems(OnExit(Screen::Gameplay), spawn_background_music);
     app.add_systems(
         Update,
         update_volume_based_on_proximity.run_if(in_state(Screen::Gameplay)),
@@ -28,21 +29,23 @@ struct SunProximityPool;
 #[derive(PoolLabel, PartialEq, Eq, Debug, Hash, Clone)]
 struct SkimmingSunPool;
 
-fn spawn_background_music(mut commands: Commands, music: Res<MusicAssets>) {
+fn spawn_background_music_pools(mut commands: Commands) {
     info!("Spawning background music");
     commands.spawn((
         SamplerPool(SunProximityPool),
         VolumeNode {
-            volume: Volume::Linear(0.0),
+            volume: Volume::Linear(0.4),
         },
     ));
     commands.spawn((
         SamplerPool(SkimmingSunPool),
         VolumeNode {
-            volume: Volume::Linear(0.0),
+            volume: Volume::Linear(0.4),
         },
     ));
+}
 
+fn spawn_background_music(mut commands: Commands, music: Res<MusicAssets>) {
     commands.spawn((
         Name::new("Proximity noise"),
         StateScoped(Screen::Gameplay),
