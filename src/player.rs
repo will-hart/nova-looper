@@ -28,7 +28,7 @@ pub(super) fn plugin(app: &mut App) {
     app.register_type::<PlayerPower>();
     app.register_type::<ShieldAlarm>();
 
-    app.add_plugins((assets::plugin, trail::TrailPlugin::<25>));
+    app.add_plugins((assets::plugin, trail::TrailPlugin::<12>));
 
     app.add_systems(OnEnter(Screen::Gameplay), spawn_player);
     app.add_systems(
