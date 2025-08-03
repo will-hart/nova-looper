@@ -15,12 +15,12 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            increase_multiplier,
+            increase_multiplier.run_if(in_state(Nova::Idle)),
             increase_score,
             update_score_text,
             update_multiplier_text,
         )
-            .distributive_run_if(resource_exists::<Score>.and(in_state(Nova::Idle))),
+            .distributive_run_if(resource_exists::<Score>),
     );
 }
 
