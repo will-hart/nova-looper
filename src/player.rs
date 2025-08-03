@@ -298,7 +298,7 @@ fn shield_monitor(
                 .spawn((
                     SamplePlayer::new(player_assets.shield_alert.clone())
                         .looping()
-                        .with_volume(bevy_seedling::prelude::Volume::Linear(0.8)),
+                        .with_volume(bevy_seedling::prelude::Volume::Linear(1.0)),
                     StateScoped(Screen::Gameplay),
                 ))
                 .id();
