@@ -35,4 +35,4 @@ pub const SCORE_INCREASE_RATE: f32 = 7.0;
 pub const SHIELD_COST_ON_OBSTACLE_HIT: f32 = 30.0;
 
 /// The colour of sun flare obstacles
-pub const OBSTACLE_COLOR: Color = Color::srgba(4.0, 1.7, 0.08, 1.0);
+pub const OBSTACLE_COLOR: Color = Color::srgba(6.0, 1.7, 0.08, 1.0);
