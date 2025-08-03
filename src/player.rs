@@ -34,6 +34,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .run_if(in_state(Screen::Gameplay)),
     );
+    app.add_systems(OnExit(Nova::Idle), ensure_trail_particles_deactivate);
     app.add_systems(
         Update,
         (
@@ -151,6 +152,12 @@ fn spawn_player(
             PlayerEffects
         )],
     ));
+}
+
+fn ensure_trail_particles_deactivate(
+    mut effect_state: Single<&mut ParticleSpawnerState, With<PlayerEffects>>,
+) {
+    effect_state.active = false;
 }
 
 fn activate_trail_particles_on_sun(
