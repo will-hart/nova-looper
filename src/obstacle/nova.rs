@@ -6,25 +6,59 @@ use crate::{
     consts::MAX_PLAYER_RADIUS,
     obstacle::Obstacle,
     player::{ItemPosition, Player},
+    screens::Screen,
     sun::Sun,
-    supernova::Nova,
+    supernova::{Nova, NovaTimer},
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.register_type::<WarpBarrier>();
+    app.register_type::<BlackHole>();
     app.add_systems(
         OnEnter(Nova::During),
         (clear_existing_obstacles, spawn_barriers).chain(),
     );
+    app.add_systems(
+        Update,
+        scale_down_black_holes.run_if(in_state(Nova::After).and(resource_exists::<NovaTimer>)),
+    );
+    app.add_systems(OnEnter(Nova::After), deterrify_black_holes);
+    app.add_systems(OnExit(Nova::After), despawn_black_holes);
 }
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub(super) struct WarpBarrier;
+pub(super) struct BlackHole;
 
 fn clear_existing_obstacles(mut commands: Commands, obstacles: Query<Entity, With<Obstacle>>) {
     for entity in &obstacles {
         commands.entity(entity).despawn();
+    }
+}
+
+// make black holes less scary?
+fn deterrify_black_holes(mut commands: Commands, black_holes: Query<Entity, With<BlackHole>>) {
+    for entity in &black_holes {
+        commands
+            .entity(entity)
+            .remove::<Sensor>()
+            .remove::<Collider>();
+    }
+}
+// make black holes less scary?
+fn despawn_black_holes(mut commands: Commands, black_holes: Query<Entity, With<BlackHole>>) {
+    for entity in &black_holes {
+        commands.entity(entity).despawn();
+    }
+}
+
+fn scale_down_black_holes(
+    timer: Res<NovaTimer>,
+    mut black_holes: Query<&mut Transform, With<BlackHole>>,
+) {
+    let remaining = timer.0.fraction_remaining();
+
+    for mut bh_tx in &mut black_holes {
+        bh_tx.scale = Vec3::splat(remaining);
     }
 }
 
@@ -52,8 +86,8 @@ fn spawn_barriers(
             -0.3,
         );
         commands.spawn((
-            StateScoped(Nova::During),
-            WarpBarrier,
+            BlackHole,
+            StateScoped(Screen::Gameplay),
             Mesh2d(mesh.clone()),
             MeshMaterial2d(color.clone()),
             RigidBody::Dynamic,

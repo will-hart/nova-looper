@@ -98,7 +98,7 @@ fn destroy_timer(mut commands: Commands) {
 
 #[derive(Resource, Reflect)]
 #[reflect(Resource)]
-pub struct NovaTimer(Timer);
+pub struct NovaTimer(pub Timer);
 
 fn on_start_idle(mut commands: Commands) {
     commands.insert_resource(NovaTimer(Timer::from_seconds(IDLE_PHASE, TimerMode::Once)));

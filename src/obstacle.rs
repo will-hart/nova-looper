@@ -13,7 +13,7 @@ mod nova;
 use crate::{
     PlayerAssets,
     consts::{MAX_PLAYER_RADIUS, OBSTACLE_COLOR, SHIELD_COST_ON_OBSTACLE_HIT},
-    obstacle::nova::WarpBarrier,
+    obstacle::nova::BlackHole,
     player::{ItemPosition, Player, PlayerPower, PlayerShield},
     screens::Screen,
     sun::Sun,
@@ -158,7 +158,7 @@ fn collide_obstacles(
     mut death_reason: ResMut<DeathReason>,
     colliders: Query<(Entity, &CollidingEntities)>,
     obstacles: Query<&Transform, With<Obstacle>>,
-    warp_barriers: Query<(), With<WarpBarrier>>,
+    warp_barriers: Query<(), With<BlackHole>>,
     mut power: Single<(&mut PlayerPower, &mut PlayerShield)>,
 ) {
     for (_entity, colliding) in &colliders {
