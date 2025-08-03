@@ -82,7 +82,7 @@ fn update_volume_based_on_proximity(
             let new_volume = (1.0 - (radius / 500.0)).clamp(0.0, 1.0) / 2.0;
             prox_volume.volume = Volume::Linear(new_volume);
 
-            skimming_volume.volume = Volume::Linear(if radius < 1.0 { 0.5 } else { 0.0 });
+            skimming_volume.volume = Volume::Linear(if radius < 5.0 { 0.65 } else { 0.0 });
         }
         Nova::During => {
             skimming_volume.volume = Volume::Linear(0.0);
