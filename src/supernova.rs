@@ -177,7 +177,7 @@ fn during_buildup(
     }
 
     let (mut sun_tx, sun_mat) = sun.into_inner();
-    if let Some(material) = sun_mats.get_mut(&*sun_mat) {
+    if let Some(material) = sun_mats.get_mut(sun_mat) {
         material.inner_color = sun_inner.to_srgba().to_vec4();
         material.color = sun_outer.to_srgba().to_vec4();
     }
