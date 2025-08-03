@@ -1,12 +1,14 @@
 use bevy::{color::palettes::css::RED, prelude::*};
+use bevy_seedling::sample::SamplePlayer;
 
 use crate::{
+    PlayerAssets,
     consts::SCORE_INCREASE_RATE,
     materials::BarDataSource,
     player::PlayerPower,
     screens::Screen,
     supernova::Nova,
-    utils::{self, DestroyAt, MoveInDirection, TextScale},
+    utils::{self, DestroyAt, MoveInDirection, ScaleTextOverTime},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -99,6 +101,7 @@ fn update_multiplier_text(score: Res<Score>, mut text: Single<&mut Text, With<Mu
 fn increase_multiplier(
     mut commands: Commands,
     time: Res<Time>,
+    player_assets: Res<PlayerAssets>,
     mut score: ResMut<Score>,
     player: Single<(&Transform, &mut PlayerPower)>,
 ) {
@@ -112,13 +115,16 @@ fn increase_multiplier(
             Text2d::new(format!("{}x", score.multiplier)),
             TextFont::from_font_size(32.0),
             Transform::from_translation(player_tx.translation),
-            TextScale {
+            TextColor(Color::Srgba(Srgba::new(3.93, 0.56, 0.08, 1.0))),
+            ScaleTextOverTime {
                 rate: 24.0,
                 max: 64.0,
             },
             MoveInDirection(player_tx.translation.truncate().normalize() * 100.0),
             DestroyAt(time.elapsed_secs() + 4.0),
         ));
+
+        commands.spawn(SamplePlayer::new(player_assets.multiplier_up.clone()));
     }
 }
 

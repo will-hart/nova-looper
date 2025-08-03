@@ -57,19 +57,19 @@ fn destroy_at_watcher(
 
 #[derive(Component, Reflect, Debug)]
 #[reflect(Component)]
-pub struct TextScale {
+pub struct ScaleTextOverTime {
     pub rate: f32,
     pub max: f32,
 }
 
-impl TextScale {
+impl ScaleTextOverTime {
     fn update(&self, dt: f32, current: f32) -> f32 {
         let amount = self.rate * dt;
         (current + amount).min(self.max)
     }
 }
 
-fn text_scaling_system(time: Res<Time>, mut texts: Query<(&mut TextFont, &TextScale)>) {
+fn text_scaling_system(time: Res<Time>, mut texts: Query<(&mut TextFont, &ScaleTextOverTime)>) {
     for (mut font, scale) in &mut texts {
         font.font_size = scale.update(time.delta_secs(), font.font_size);
     }
