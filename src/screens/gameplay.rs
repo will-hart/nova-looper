@@ -1,6 +1,6 @@
 //! The screen state for the main gameplay.
 
-use bevy::prelude::*;
+use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 use bevy_seedling::{
     pool::SamplerPool,
     prelude::{PoolLabel, Volume, VolumeNode},
@@ -19,6 +19,10 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnExit(Screen::Gameplay), spawn_background_music);
     app.add_systems(
         Update,
+        exit_to_menu.run_if(in_state(Screen::Gameplay).and(input_just_pressed(KeyCode::Escape))),
+    );
+    app.add_systems(
+        Update,
         update_volume_based_on_proximity.run_if(in_state(Screen::Gameplay)),
     );
 }
@@ -28,6 +32,10 @@ struct SunProximityPool;
 
 #[derive(PoolLabel, PartialEq, Eq, Debug, Hash, Clone)]
 struct SkimmingSunPool;
+
+fn exit_to_menu(mut state: ResMut<NextState<Screen>>) {
+    state.set(Screen::Title);
+}
 
 fn spawn_background_music_pools(mut commands: Commands) {
     info!("Spawning background music");
