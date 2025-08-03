@@ -110,7 +110,6 @@ fn spawn_main_menu(
             Mesh2d(player_mesh),
             MeshMaterial2d(color_materials.add(color)),
             Transform::from_xyz(1.1 * SUN_STARTING_RADIUS, 0.0, 0.1).with_scale(Vec3::splat(4.0)),
-            Player,
             ItemPosition::default(),
         )],
     ));
