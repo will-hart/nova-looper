@@ -20,12 +20,17 @@ fn control_player(
     nova: Res<State<Nova>>,
     mut delta: ResMut<PlayerInputAngle>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
+    touches: Res<Touches>,
+    mouse: Res<ButtonInput<MouseButton>>,
     time: Res<Time>,
     mut player: Single<&mut ItemPosition, With<Player>>,
 ) {
     match **nova {
         Nova::Idle | Nova::BuildingUp => {
-            if keyboard_input.pressed(KeyCode::Space) {
+            if keyboard_input.pressed(KeyCode::Space)
+                || touches.iter().next().is_some()
+                || mouse.pressed(MouseButton::Left)
+            {
                 delta.0 += MAGIC_MOVEMENT_ACCEL_SCALE * time.delta_secs();
             } else {
                 delta.0 -= MAGIC_MOVEMENT_ACCEL_SCALE * time.delta_secs();
