@@ -9,10 +9,12 @@ pub const PLAYER_STARTING_SPEED: f32 = 0.45;
 /// The radius of the sun at the start
 pub const SUN_STARTING_RADIUS: f32 = 1000.0;
 
-/// The random fudge factor for movement speed
-pub const PLAYER_RADIUS_CHANGE_SPEED: f32 = 150.0;
+/// The random fudge factor for movement speed inwards and outwards
+/// along the radius
+pub const PLAYER_RADIUS_CHANGE_SPEED: f32 = 180.0;
 
-/// The random fudge factor that makes controls feel more responsive
+/// The random fudge factor that makes controls feel more responsive.
+/// This controls how fast the movement direction changes
 pub const MAGIC_MOVEMENT_ACCEL_SCALE: f32 = 14.0;
 
 /// The maximum radius a player can have relateive the centre of the sun
