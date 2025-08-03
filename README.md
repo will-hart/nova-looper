@@ -14,3 +14,6 @@ close for too long or you'll burn up!
 
 Available at <https://wilsk.itch.io/nova-looper>.
 
+## License
+
+MIT / Apache 2.0 for code, CC BY 4.0 for assets
