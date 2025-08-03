@@ -62,7 +62,7 @@ fn spawn_main_menu(
             ..default()
         },
         children![
-            Text::new("Welcome to NOVA RUNNER ::: Run close to the sun to collect power, watch out for obstacles and keep your shields above 0. Use space, mouse or tap to control."),
+            Text::new(":::Welcome to NOVA RUNNER:::\nRun close to the sun to collect power, watch out for obstacles and keep your shields above 0. Use space, mouse or tap to control."),
             (
                 Node   {
                     width: Val::Percent(100.0),
