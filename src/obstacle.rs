@@ -21,11 +21,19 @@ use crate::{
     utils::DestroyAt,
 };
 
+const BURNED_UP: &str = "You burned up in the sun.";
+const BLACK_HOLE: &str = "You flew into a black hole.";
+
 pub(super) fn plugin(app: &mut App) {
+    app.register_type::<DeathReason>();
     app.register_type::<Obstacle>();
     app.register_type::<AsteroidDebris>();
 
+    app.init_resource::<DeathReason>();
+
     app.add_plugins(nova::plugin);
+
+    app.add_systems(OnEnter(Screen::Gameplay), reset_death_reason);
 
     app.add_systems(
         Update,
@@ -41,6 +49,20 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Obstacle;
+
+#[derive(Resource, Reflect)]
+#[reflect(Resource)]
+pub struct DeathReason(pub String);
+
+impl Default for DeathReason {
+    fn default() -> Self {
+        Self(BURNED_UP.into())
+    }
+}
+
+fn reset_death_reason(mut death_reason: ResMut<DeathReason>) {
+    death_reason.0 = BURNED_UP.into();
+}
 
 fn periodically_spawn_obstacles(
     mut commands: Commands,
@@ -129,6 +151,7 @@ fn collide_obstacles(
     player_assets: Option<Res<PlayerAssets>>,
     asset_server: Res<AssetServer>,
     mut screen: ResMut<NextState<Screen>>,
+    mut death_reason: ResMut<DeathReason>,
     colliders: Query<(Entity, &CollidingEntities)>,
     obstacles: Query<&Transform, With<Obstacle>>,
     warp_barriers: Query<(), With<WarpBarrier>>,
@@ -143,6 +166,7 @@ fn collide_obstacles(
             if let Ok(_) = warp_barriers.get(*collider) {
                 // uh oh we dead, can't go round hitting things in warp
                 screen.set(Screen::GameOver);
+                death_reason.0 = BLACK_HOLE.into();
 
                 if let Some(player_assets) = &player_assets {
                     commands.spawn(SamplePlayer::new(player_assets.obstacle_hit.clone()));

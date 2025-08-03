@@ -2,13 +2,17 @@
 
 use bevy::prelude::*;
 
-use crate::{score::Score, screens::Screen, theme::widget};
+use crate::{DeathReason, score::Score, screens::Screen, theme::widget};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::GameOver), spawn_gameover_menu);
 }
 
-fn spawn_gameover_menu(mut commands: Commands, score: Option<Res<Score>>) {
+fn spawn_gameover_menu(
+    mut commands: Commands,
+    score: Option<Res<Score>>,
+    death_reason: Res<DeathReason>,
+) {
     let score = score.map(|s| s.score).unwrap_or_default();
 
     commands.spawn((
@@ -17,7 +21,7 @@ fn spawn_gameover_menu(mut commands: Commands, score: Option<Res<Score>>) {
         StateScoped(Screen::GameOver),
         children![
             widget::header("Game Over!"),
-            widget::label("Your shields were down for too long!"),
+            widget::label(death_reason.0.clone()),
             widget::label(format!("You scored {score:.0}!")),
             widget::menu_button("Play again", play_again),
             widget::menu_button("Main Menu", return_to_menu),

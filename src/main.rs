@@ -13,6 +13,7 @@ pub(crate) mod input;
 mod materials;
 mod menus;
 mod obstacle;
+pub(crate) use obstacle::DeathReason;
 mod player;
 pub(crate) use player::PlayerAssets;
 mod score;
