@@ -7,9 +7,13 @@ use bevy_enoki::{
 use bevy_seedling::sample::SamplePlayer;
 use rand::{Rng, thread_rng};
 
+/// nova obstacles
+mod nova;
+
 use crate::{
     PlayerAssets,
     consts::{MAX_PLAYER_RADIUS, OBSTACLE_GRAVITY_SCALE, SHIELD_COST_ON_OBSTACLE_HIT},
+    obstacle::nova::WarpBarrier,
     player::{ItemPosition, Player, PlayerPower, PlayerShield},
     screens::Screen,
     sun::Sun,
@@ -21,10 +25,13 @@ pub(super) fn plugin(app: &mut App) {
     app.register_type::<Obstacle>();
     app.register_type::<AsteroidDebris>();
 
+    app.add_plugins(nova::plugin);
+
     app.add_systems(
         Update,
         (
             (periodically_spawn_obstacles, collide_obstacles).run_if(in_state(Nova::Idle)),
+            collide_obstacles.run_if(in_state(Nova::During)),
             // this doesn't seem to work :shrug
             update_debris_gravity_direction,
         ),
@@ -121,8 +128,10 @@ fn collide_obstacles(
     mut commands: Commands,
     player_assets: Option<Res<PlayerAssets>>,
     asset_server: Res<AssetServer>,
+    mut screen: ResMut<NextState<Screen>>,
     colliders: Query<(Entity, &CollidingEntities)>,
     obstacles: Query<&Transform, With<Obstacle>>,
+    warp_barriers: Query<(), With<WarpBarrier>>,
     mut power: Single<(&mut PlayerPower, &mut PlayerShield)>,
 ) {
     for (_entity, colliding) in &colliders {
@@ -131,6 +140,15 @@ fn collide_obstacles(
         }
 
         for collider in colliding.iter() {
+            if let Ok(_) = warp_barriers.get(*collider) {
+                // uh oh we dead, can't go round hitting things in warp
+                screen.set(Screen::GameOver);
+
+                if let Some(player_assets) = &player_assets {
+                    commands.spawn(SamplePlayer::new(player_assets.obstacle_hit.clone()));
+                }
+            }
+
             if let Ok(tx) = obstacles.get(*collider) {
                 power.0.0 = (power.0.0 - 25.0).clamp(0.0, 100.0);
                 power.1.0 = (power.1.0 - SHIELD_COST_ON_OBSTACLE_HIT).clamp(0.0, 100.0);

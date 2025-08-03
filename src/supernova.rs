@@ -131,7 +131,7 @@ fn on_start_buildup(
                 top: Val::Px(45.0),
                 ..default()
             },
-            Text::new("NOVA ALERT - AUTOPILOT ON"),
+            Text::new("!!NOVA ALERT!!\nENGAGING WARP DRIVE"),
             TextLayout {
                 justify: JustifyText::Center,
                 ..default()
