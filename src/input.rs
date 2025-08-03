@@ -32,10 +32,10 @@ fn control_player(
             }
             delta.0 = delta.0.clamp(-1.0, 1.0);
         }
-        Nova::DuringNova => {
+        Nova::During => {
             delta.0 = 1.0;
         }
-        Nova::AfterNova => {
+        Nova::After => {
             delta.0 = -1.0;
         }
     };

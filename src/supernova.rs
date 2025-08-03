@@ -14,8 +14,8 @@ use crate::{
 };
 
 const IDLE_PHASE: f32 = 30.0;
-const BUILD_PHASE: f32 = 5.0;
-const DURING_PHASE: f32 = 4.0;
+const BUILD_PHASE: f32 = 6.0;
+const DURING_PHASE: f32 = 10.0;
 const AFTER_PHASE: f32 = 4.0;
 
 pub(super) fn plugin(app: &mut App) {
@@ -34,12 +34,12 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, during_buildup.run_if(in_state(Nova::BuildingUp)));
     app.add_systems(OnExit(Nova::BuildingUp), on_finish_buildup);
 
-    app.add_systems(OnEnter(Nova::DuringNova), on_start_during);
-    app.add_systems(OnExit(Nova::DuringNova), on_finish_during);
+    app.add_systems(OnEnter(Nova::During), on_start_during);
+    app.add_systems(OnExit(Nova::During), on_finish_during);
 
-    app.add_systems(OnEnter(Nova::AfterNova), on_start_after);
-    app.add_systems(Update, during_after.run_if(in_state(Nova::AfterNova)));
-    app.add_systems(OnExit(Nova::AfterNova), on_finish_after);
+    app.add_systems(OnEnter(Nova::After), on_start_after);
+    app.add_systems(Update, during_after.run_if(in_state(Nova::After)));
+    app.add_systems(OnExit(Nova::After), on_finish_after);
 }
 
 #[derive(SubStates, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
@@ -51,21 +51,19 @@ pub enum Nova {
     Idle,
     /// When the nova is started but we haven't yet left the star
     BuildingUp,
-    #[expect(clippy::enum_variant_names)]
     /// While the nova is happening and we're travelling to the next star
-    DuringNova,
-    #[expect(clippy::enum_variant_names)]
+    During,
     /// While we're arriving at the next star, before we start skimming
-    AfterNova,
+    After,
 }
 
 impl Nova {
     fn next_state(&self) -> Self {
         match self {
             Nova::Idle => Nova::BuildingUp,
-            Nova::BuildingUp => Nova::DuringNova,
-            Nova::DuringNova => Nova::AfterNova,
-            Nova::AfterNova => Nova::Idle,
+            Nova::BuildingUp => Nova::During,
+            Nova::During => Nova::After,
+            Nova::After => Nova::Idle,
         }
     }
 }

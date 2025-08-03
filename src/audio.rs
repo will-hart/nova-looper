@@ -23,6 +23,8 @@ pub struct MusicAssets {
     pub(super) menu: Handle<Sample>,
     #[dependency]
     pub(super) supernova: Handle<Sample>,
+    #[dependency]
+    pub(super) sun_proximity: Handle<Sample>,
 }
 
 impl FromWorld for MusicAssets {
@@ -31,6 +33,7 @@ impl FromWorld for MusicAssets {
         Self {
             menu: assets.load("audio/music/menu.ogg"),
             supernova: assets.load("audio/music/supernova.ogg"),
+            sun_proximity: assets.load("audio/music/sun_proximity.ogg"),
         }
     }
 }

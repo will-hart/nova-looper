@@ -24,8 +24,8 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            periodically_spawn_obstacles.run_if(in_state(Nova::Idle)),
-            collide_obstacles,
+            (periodically_spawn_obstacles, collide_obstacles).run_if(in_state(Nova::Idle)),
+            // this doesn't seem to work :shrug
             update_debris_gravity_direction,
         ),
     );
