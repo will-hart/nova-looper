@@ -25,6 +25,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         tick_nova_timer.run_if(resource_exists::<NovaTimer>.and(state_exists::<Nova>)),
     );
+    app.add_systems(OnExit(Screen::Gameplay), destroy_timer);
 
     app.add_systems(OnEnter(Nova::Idle), on_start_idle);
     app.add_systems(OnExit(Nova::Idle), on_finish_idle);
@@ -84,6 +85,10 @@ fn tick_nova_timer(
     }
 }
 
+fn destroy_timer(mut commands: Commands) {
+    commands.remove_resource::<NovaTimer>();
+}
+
 /* NOVA IDLE */
 
 #[derive(Resource, Reflect)]
@@ -94,13 +99,16 @@ fn on_start_idle(mut commands: Commands) {
     commands.insert_resource(NovaTimer(Timer::from_seconds(IDLE_PHASE, TimerMode::Once)));
 }
 
-fn on_finish_idle(mut commands: Commands, player_assets: Res<PlayerAssets>) {
-    commands.spawn(SamplePlayer::new(player_assets.nova_alert.clone()));
-}
+fn on_finish_idle() {}
 
 /* NOVA BUILDING UP */
 
-fn on_start_buildup(mut commands: Commands, music_assets: Res<MusicAssets>) {
+fn on_start_buildup(
+    mut commands: Commands,
+    player_assets: Res<PlayerAssets>,
+    music_assets: Res<MusicAssets>,
+) {
+    commands.spawn(SamplePlayer::new(player_assets.nova_alert.clone()));
     commands.insert_resource(NovaTimer(Timer::from_seconds(BUILD_PHASE, TimerMode::Once)));
     commands.spawn(SamplePlayer::new(music_assets.supernova.clone()));
 }

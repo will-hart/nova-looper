@@ -12,6 +12,7 @@ use crate::{
     materials::BarDataSource,
     screens::Screen,
     sun::Sun,
+    supernova::Nova,
 };
 
 mod assets;
@@ -226,6 +227,7 @@ fn shield_monitor(
                 .id();
             let text = commands
                 .spawn((
+                    StateScoped(Nova::Idle),
                     Node {
                         position_type: PositionType::Absolute,
                         top: Val::ZERO,

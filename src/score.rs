@@ -2,7 +2,7 @@ use bevy::{color::palettes::css::RED, prelude::*};
 
 use crate::{
     consts::SCORE_INCREASE_RATE, materials::BarDataSource, player::PlayerPower, screens::Screen,
-    utils,
+    supernova::Nova, utils,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -20,7 +20,7 @@ pub(super) fn plugin(app: &mut App) {
             update_score_text,
             update_multiplier_text,
         )
-            .distributive_run_if(resource_exists::<Score>),
+            .distributive_run_if(resource_exists::<Score>.and(in_state(Nova::Idle))),
     );
 }
 
