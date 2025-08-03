@@ -17,8 +17,8 @@ use crate::{
 
 const IDLE_PHASE: f32 = 30.0;
 const BUILD_PHASE: f32 = 6.0;
-const DURING_PHASE: f32 = 10.0;
-const AFTER_PHASE: f32 = 4.0;
+const DURING_PHASE: f32 = 9.0;
+const AFTER_PHASE: f32 = 2.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_sub_state::<Nova>();
