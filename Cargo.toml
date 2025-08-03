@@ -1,7 +1,7 @@
 [package]
 name = "nova-looper"
 authors = ["William Hart <391950+will-hart@users.noreply.github.com>"]
-version = "1.2.0"
+version = "1.3.0"
 edition = "2024"
 
 [dependencies]
