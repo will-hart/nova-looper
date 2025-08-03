@@ -111,7 +111,10 @@ fn on_start_buildup(
 ) {
     commands.spawn(SamplePlayer::new(player_assets.nova_alert.clone()));
     commands.insert_resource(NovaTimer(Timer::from_seconds(BUILD_PHASE, TimerMode::Once)));
-    commands.spawn(SamplePlayer::new(music_assets.supernova.clone()));
+    commands.spawn((
+        StateScoped(Screen::Gameplay),
+        SamplePlayer::new(music_assets.supernova.clone()),
+    ));
 
     commands.spawn((
         StateScoped(Nova::BuildingUp),

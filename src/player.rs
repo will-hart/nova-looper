@@ -149,7 +149,7 @@ fn update_player_theta(
     nova: Option<Res<State<Nova>>>,
     mut player: Single<&mut ItemPosition, With<Player>>,
 ) {
-    let multiplier = if nova.is_none() {
+    let speed_multiplier = if nova.is_none() {
         if player.radius < 1.0 { 1.5 } else { 1.0 }
     } else {
         match **nova.unwrap() {
@@ -161,10 +161,10 @@ fn update_player_theta(
                 }
             }
             Nova::BuildingUp => 1.0,
-            _ => 0.4,
+            _ => 0.8,
         }
     };
-    player.theta += player.speed * time.delta_secs() * multiplier;
+    player.theta += player.speed * time.delta_secs() * speed_multiplier;
 }
 
 fn set_player_position(
@@ -220,7 +220,7 @@ fn power_generation(
                 let power = -0.05 * distance + 14.0;
                 player.1.0 + time.delta_secs() * power.clamp(-3.0, 10.0)
             }
-            Nova::BuildingUp | Nova::During => 0.99,
+            Nova::BuildingUp | Nova::During => 99.0,
             Nova::After => 0.0,
         },
         None => {
@@ -271,7 +271,9 @@ fn shield_monitor(
         if maybe_alarm.is_none() {
             let alarm = commands
                 .spawn((
-                    SamplePlayer::new(player_assets.shield_alert.clone()).looping(),
+                    SamplePlayer::new(player_assets.shield_alert.clone())
+                        .looping()
+                        .with_volume(bevy_seedling::prelude::Volume::Linear(0.8)),
                     StateScoped(Screen::Gameplay),
                 ))
                 .id();
