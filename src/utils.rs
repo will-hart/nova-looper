@@ -1,13 +1,8 @@
 use bevy::prelude::*;
 
-use crate::screens::Screen;
-
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Rotate>();
-    app.add_systems(
-        Update,
-        (rotate_shapes, destroy_at_watcher).run_if(in_state(Screen::Gameplay)),
-    );
+    app.add_systems(Update, (rotate_shapes, destroy_at_watcher));
 }
 
 pub fn format_number(number: f32) -> String {
@@ -29,7 +24,7 @@ impl Default for Rotate {
 /// Rotates shapes a little bit each frame based on the rotation speed
 fn rotate_shapes(time: Res<Time>, mut shapes: Query<(&mut Transform, &Rotate)>) {
     for (mut tx, rot) in &mut shapes {
-        tx.rotation = Quat::from_axis_angle(Vec3::Z, rot.0 * time.delta_secs());
+        tx.rotation *= Quat::from_axis_angle(Vec3::Z, rot.0 * time.delta_secs());
     }
 }
 

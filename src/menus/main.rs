@@ -4,8 +4,17 @@ use bevy::prelude::*;
 use bevy_seedling::prelude::*;
 
 use crate::{
-    MusicAssets, asset_tracking::ResourceHandles, menus::Menu, score::Score, screens::Screen,
+    MusicAssets,
+    asset_tracking::ResourceHandles,
+    consts::SUN_STARTING_RADIUS,
+    materials::SunMaterial,
+    menus::Menu,
+    player::{ItemPosition, Player},
+    score::Score,
+    screens::Screen,
+    sun::Sun,
     theme::widget,
+    utils::Rotate,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -28,7 +37,12 @@ fn spawn_music(mut commands: Commands, music_assets: Res<MusicAssets>) {
     ));
 }
 
-fn spawn_main_menu(mut commands: Commands) {
+fn spawn_main_menu(
+    mut commands: Commands,
+    mut color_materials: ResMut<Assets<ColorMaterial>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<SunMaterial>>,
+) {
     commands.spawn((
         Name::new("Main Menu"),
         Pickable::IGNORE,
@@ -42,25 +56,63 @@ fn spawn_main_menu(mut commands: Commands) {
             height: Val::Percent(100.0),
             padding: UiRect::all(Val::Px(20.0)),
             display: Display::Flex,
-            flex_direction: FlexDirection::Row,
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::FlexEnd,
-            column_gap: Val::Px(20.0),
+            flex_direction: FlexDirection::Column,
+            justify_content: JustifyContent::SpaceBetween,
+            align_items: AlignItems::Center,
             ..default()
         },
-        #[cfg(not(target_family = "wasm"))]
         children![
-            widget::menu_button("Play", enter_loading_or_gameplay_screen),
-            // widget::menu_button("Settings", open_settings_menu),
-            widget::menu_button("Credits", open_credits_menu),
-            widget::menu_button("Exit", exit_app),
-        ],
-        #[cfg(target_family = "wasm")]
-        children![
-            widget::menu_button("Play", enter_loading_or_gameplay_screen),
-            // widget::menu_button("Settings", open_settings_menu),
-            widget::menu_button("Credits", open_credits_menu),
-        ],
+            Text::new("Welcome to NOVA RUNNER ::: Run close to the sun to collect power, watch out for obstacles and keep your shields above 0. Use space, mouse or tap to control."),
+            (
+                Node   {
+                    width: Val::Percent(100.0),
+                    flex_direction:FlexDirection::Row,
+                    justify_content: JustifyContent::Center,
+                    column_gap: Val::Px(20.0),
+                    ..default()
+                },
+
+                #[cfg(not(target_family = "wasm"))]
+                children![
+                    widget::menu_button("Play", enter_loading_or_gameplay_screen),
+                    // widget::menu_button("Settings", open_settings_menu),
+                    widget::menu_button("Credits", open_credits_menu),
+                    widget::menu_button("Exit", exit_app),
+                ],
+                #[cfg(target_family = "wasm")]
+                children![
+                    widget::menu_button("Play", enter_loading_or_gameplay_screen),
+                    // widget::menu_button("Settings", open_settings_menu),
+                    widget::menu_button("Credits", open_credits_menu),
+                ],
+            )
+        ]
+    ));
+
+    // spawn a random sun and orbiting player for interest
+    let sun = Sun::default();
+    let mesh = meshes.add(Rectangle::new(2.0 * sun.radius, 2.0 * sun.radius));
+    let player_mesh = meshes.add(Triangle2d::new(
+        Vec2::Y * 10.0,
+        Vec2::new(-5.0, -5.0),
+        Vec2::new(5.0, -5.0),
+    ));
+    let color = Color::hsl(142.0, 0.95, 0.97);
+
+    commands.spawn((
+        Mesh2d(mesh),
+        MeshMaterial2d(materials.add(SunMaterial::default())),
+        StateScoped(Screen::Title),
+        Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)).with_scale(Vec3::splat(0.2)),
+        sun,
+        Rotate(0.1),
+        children![(
+            Mesh2d(player_mesh),
+            MeshMaterial2d(color_materials.add(color)),
+            Transform::from_xyz(1.1 * SUN_STARTING_RADIUS, 0.0, 0.1).with_scale(Vec3::splat(4.0)),
+            Player,
+            ItemPosition::default(),
+        )],
     ));
 }
 
