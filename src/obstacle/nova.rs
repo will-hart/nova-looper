@@ -36,16 +36,15 @@ fn spawn_barriers(
     sun: Single<&Sun>,
 ) {
     let current_theta = player.theta;
-
-    let mesh = meshes.add(Circle::new(1.0));
     let color = materials.add(Color::Srgba(BLACK));
 
     let mut rng = thread_rng();
 
     for extra in 2..=15 {
+        let scale = rng.gen_range(40.0..60.0);
+        let mesh = meshes.add(Circle::new(scale));
         let theta = current_theta + extra as f32 * 0.3;
         let radius = rng.gen_range(sun.radius..(sun.radius + MAX_PLAYER_RADIUS - 80.0));
-        let scale = rng.gen_range(40.0..60.0);
 
         let pos = Vec3::new(
             radius * (theta + 0.1).sin(),
@@ -60,12 +59,10 @@ fn spawn_barriers(
             RigidBody::Dynamic,
             Collider::circle(0.98 * scale),
             Sensor,
-            Transform::from_translation(pos)
-                .with_rotation(Quat::from_axis_angle(
-                    Vec3::Z,
-                    pos.truncate().to_angle() + std::f32::consts::FRAC_PI_2,
-                ))
-                .with_scale(Vec3::splat(scale)),
+            Transform::from_translation(pos).with_rotation(Quat::from_axis_angle(
+                Vec3::Z,
+                pos.truncate().to_angle() + std::f32::consts::FRAC_PI_2,
+            )),
         ));
     }
 }
