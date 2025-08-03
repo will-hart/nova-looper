@@ -1,9 +1,11 @@
 use bevy::{
     color::palettes::css::{RED, WHITE},
-    dev_tools::states::log_transitions,
     prelude::*,
 };
 use bevy_seedling::sample::SamplePlayer;
+
+#[cfg(debug_assertions)]
+pub use bevy::dev_tools::states::log_transitions;
 
 use crate::{
     MusicAssets, PlayerAssets,
@@ -20,6 +22,7 @@ const AFTER_PHASE: f32 = 4.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_sub_state::<Nova>();
+    #[cfg(debug_assertions)]
     app.add_systems(Update, log_transitions::<Nova>);
     app.add_systems(
         Update,
