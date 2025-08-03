@@ -2,7 +2,15 @@ use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Rotate>();
-    app.add_systems(Update, (rotate_shapes, destroy_at_watcher));
+    app.add_systems(
+        Update,
+        (
+            rotate_shapes,
+            destroy_at_watcher,
+            text_scaling_system,
+            move_items_in_direction,
+        ),
+    );
 }
 
 pub fn format_number(number: f32) -> String {
@@ -44,5 +52,38 @@ fn destroy_at_watcher(
             // info!("Destroying obstacle");
             commands.entity(ent).despawn();
         }
+    }
+}
+
+#[derive(Component, Reflect, Debug)]
+#[reflect(Component)]
+pub struct TextScale {
+    pub rate: f32,
+    pub max: f32,
+}
+
+impl TextScale {
+    fn update(&self, dt: f32, current: f32) -> f32 {
+        let amount = self.rate * dt;
+        (current + amount).min(self.max)
+    }
+}
+
+fn text_scaling_system(time: Res<Time>, mut texts: Query<(&mut TextFont, &TextScale)>) {
+    for (mut font, scale) in &mut texts {
+        font.font_size = scale.update(time.delta_secs(), font.font_size);
+    }
+}
+
+#[derive(Component, Reflect, Debug)]
+#[reflect(Component)]
+pub struct MoveInDirection(pub Vec2);
+
+pub fn move_items_in_direction(
+    time: Res<Time>,
+    mut items: Query<(&mut Transform, &MoveInDirection)>,
+) {
+    for (mut tx, mover) in &mut items {
+        tx.translation += (time.delta_secs() * mover.0).extend(0.0);
     }
 }

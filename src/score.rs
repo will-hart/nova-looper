@@ -1,8 +1,12 @@
 use bevy::{color::palettes::css::RED, prelude::*};
 
 use crate::{
-    consts::SCORE_INCREASE_RATE, materials::BarDataSource, player::PlayerPower, screens::Screen,
-    supernova::Nova, utils,
+    consts::SCORE_INCREASE_RATE,
+    materials::BarDataSource,
+    player::PlayerPower,
+    screens::Screen,
+    supernova::Nova,
+    utils::{self, DestroyAt, MoveInDirection, TextScale},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -69,7 +73,7 @@ fn setup_score(mut commands: Commands) {
     commands.spawn((
         Text::new("0x"),
         TextFont {
-            font_size: 16.0,
+            font_size: 24.0,
             ..default()
         },
         TextColor(RED.into()),
@@ -92,10 +96,29 @@ fn update_multiplier_text(score: Res<Score>, mut text: Single<&mut Text, With<Mu
     text.0 = format!("{:}x", score.multiplier);
 }
 
-fn increase_multiplier(mut score: ResMut<Score>, mut power: Single<&mut PlayerPower>) {
+fn increase_multiplier(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut score: ResMut<Score>,
+    player: Single<(&Transform, &mut PlayerPower)>,
+) {
+    let (player_tx, mut power) = player.into_inner();
+
     if power.0 > 99.0 {
         power.0 = 0.0;
         score.multiplier += 1;
+
+        commands.spawn((
+            Text2d::new(format!("{}x", score.multiplier)),
+            TextFont::from_font_size(32.0),
+            Transform::from_translation(player_tx.translation),
+            TextScale {
+                rate: 24.0,
+                max: 64.0,
+            },
+            MoveInDirection(player_tx.translation.truncate().normalize() * 100.0),
+            DestroyAt(time.elapsed_secs() + 4.0),
+        ));
     }
 }
 

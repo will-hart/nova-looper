@@ -61,8 +61,20 @@ fn spawn_background_music(mut commands: Commands, music: Res<MusicAssets>) {
 fn update_volume_based_on_proximity(
     nova: Res<State<Nova>>,
     player: Single<&ItemPosition, With<Player>>,
-    mut prox_volume: Single<&mut VolumeNode, With<SamplerPool<SunProximityPool>>>,
-    mut skimming_volume: Single<&mut VolumeNode, With<SamplerPool<SkimmingSunPool>>>,
+    mut prox_volume: Single<
+        &mut VolumeNode,
+        (
+            With<SamplerPool<SunProximityPool>>,
+            Without<SamplerPool<SkimmingSunPool>>,
+        ),
+    >,
+    mut skimming_volume: Single<
+        &mut VolumeNode,
+        (
+            With<SamplerPool<SkimmingSunPool>>,
+            Without<SamplerPool<SunProximityPool>>,
+        ),
+    >,
 ) {
     match **nova {
         Nova::Idle | Nova::BuildingUp => {

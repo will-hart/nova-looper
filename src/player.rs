@@ -157,12 +157,6 @@ fn activate_trail_particles_on_sun(
     player_pos: Single<&ItemPosition, With<Player>>,
     mut effect_state: Single<&mut ParticleSpawnerState, With<PlayerEffects>>,
 ) {
-    info!(
-        "ACTIVE? {} -> {}",
-        player_pos.radius,
-        player_pos.radius < 1.0
-    );
-
     effect_state.active = player_pos.radius < 1.0;
 }
 
