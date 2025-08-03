@@ -126,9 +126,6 @@ fn spawn_player(
         1,
     ));
 
-    let mut particle_state = ParticleSpawnerState::default();
-    particle_state.active = false;
-
     commands.spawn((
         Mesh2d(player_mesh),
         MeshMaterial2d(materials.add(color)),
@@ -146,7 +143,10 @@ fn spawn_player(
             Transform::from_translation(Vec3::new(0.0, 0.0, -0.3)),
             ParticleSpawner(particle_sprite),
             ParticleEffectHandle(asset_server.load("particles/rocket_trail.ron")),
-            particle_state,
+            ParticleSpawnerState {
+                active: false,
+                ..default()
+            },
             NoAutoAabb,
             PlayerEffects
         )],
@@ -165,10 +165,8 @@ fn update_player_theta(
     nova: Option<Res<State<Nova>>>,
     mut player: Single<&mut ItemPosition, With<Player>>,
 ) {
-    let speed_multiplier = if nova.is_none() {
-        if player.radius < 1.0 { 1.5 } else { 1.0 }
-    } else {
-        match **nova.unwrap() {
+    let speed_multiplier = if let Some(nova) = nova {
+        match **nova {
             Nova::Idle => {
                 if player.radius < 1.0 {
                     1.5
@@ -179,6 +177,10 @@ fn update_player_theta(
             Nova::BuildingUp => 1.0,
             _ => 0.8,
         }
+    } else if player.radius < 1.0 {
+        1.5
+    } else {
+        1.0
     };
     player.theta += player.speed * time.delta_secs() * speed_multiplier;
 }

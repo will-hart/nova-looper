@@ -163,7 +163,7 @@ fn collide_obstacles(
         }
 
         for collider in colliding.iter() {
-            if let Ok(_) = warp_barriers.get(*collider) {
+            if warp_barriers.get(*collider).is_ok() {
                 // uh oh we dead, can't go round hitting things in warp
                 screen.set(Screen::GameOver);
                 death_reason.0 = BLACK_HOLE.into();
