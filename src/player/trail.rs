@@ -40,16 +40,20 @@ fn spawn_trail<const N: usize>(
 ) {
     let mut items: Vec<Entity> = Vec::with_capacity(N);
     let color = materials.add(Color::srgba(3.0, 4.0, 4.0, 1.0));
-    let mesh = meshes.add(Rectangle::new(3.0, 14.0));
+    let mesh = meshes.add(Rectangle::new(3.0, 22.0));
 
     for _ in 0..N {
         let entity = commands
             .spawn((
                 TrailItem,
-                Mesh2d(mesh.clone()),
-                MeshMaterial2d(color.clone()),
                 Transform::from_translation(MEGA_AGES_AWAY),
+                Visibility::Visible,
                 StateScoped(Screen::Gameplay),
+                children![(
+                    Transform::from_translation(Vec3::new(0.0, -11.0, 0.0)),
+                    Mesh2d(mesh.clone()),
+                    MeshMaterial2d(color.clone()),
+                )],
             ))
             .id();
 
