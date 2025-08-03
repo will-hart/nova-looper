@@ -1,5 +1,5 @@
 use bevy::{
-    color::palettes::css::{RED, WHITE},
+    color::palettes::css::{DARK_CYAN, WHITE},
     prelude::*,
 };
 use bevy_seedling::sample::SamplePlayer;
@@ -14,12 +14,15 @@ use crate::{
     player::Player,
     score::Score,
     screens::Screen,
+    sun::Sun,
 };
 
 const IDLE_PHASE: f32 = 30.0;
 const BUILD_PHASE: f32 = 6.0;
-const DURING_PHASE: f32 = 14.0;
+const DURING_PHASE: f32 = 17.0;
 const AFTER_PHASE: f32 = 2.0;
+
+const BLOOMED_WHITE: Color = Color::srgba(3.0, 3.0, 3.0, 0.0);
 
 pub(super) fn plugin(app: &mut App) {
     app.add_sub_state::<Nova>();
@@ -135,7 +138,7 @@ fn on_start_buildup(
                 top: Val::Px(45.0),
                 ..default()
             },
-            Text::new("!!NOVA ALERT!!\nENGAGING WARP DRIVE"),
+            Text::new("!!NOVA ALERT!!\nENGAGING WARP DRIVE\nAVOID BLACK HOLES"),
             TextLayout {
                 justify: JustifyText::Center,
                 ..default()
@@ -156,14 +159,14 @@ fn during_buildup(
     mut sun_mats: ResMut<Assets<SunMaterial>>,
     starfield: Single<&mut MeshMaterial2d<StarfieldMaterial>>,
     player: Single<&mut MeshMaterial2d<ColorMaterial>, With<Player>>,
-    sun: Single<&mut MeshMaterial2d<SunMaterial>>,
+    sun: Single<(&mut Transform, &MeshMaterial2d<SunMaterial>)>,
 ) {
     let counter = 1.0 - 2.0 * timer.0.fraction_remaining();
 
-    let starfield_col = SPLASH_BACKGROUND_COLOR.mix(&Color::Srgba(WHITE), counter);
-    let player_col = Color::Srgba(WHITE).mix(&Color::Srgba(RED), counter);
-    let sun_outer = SUN_COLOUR.mix(&Color::Srgba(WHITE), counter);
-    let sun_inner = INNER_SUN_COLOUR.mix(&Color::Srgba(WHITE), counter);
+    let starfield_col = SPLASH_BACKGROUND_COLOR.mix(&BLOOMED_WHITE, counter);
+    let player_col = BLOOMED_WHITE.mix(&Color::Srgba(DARK_CYAN), counter);
+    let sun_outer = SUN_COLOUR.mix(&BLOOMED_WHITE, counter);
+    let sun_inner = INNER_SUN_COLOUR.mix(&BLOOMED_WHITE, counter);
 
     if let Some(material) = starfield_mats.get_mut(&starfield.0) {
         material.background = starfield_col.into();
@@ -173,13 +176,17 @@ fn during_buildup(
         material.color = player_col;
     }
 
-    if let Some(material) = sun_mats.get_mut(&sun.0) {
+    let (mut sun_tx, sun_mat) = sun.into_inner();
+    if let Some(material) = sun_mats.get_mut(&*sun_mat) {
         material.inner_color = sun_inner.to_srgba().to_vec4();
         material.color = sun_outer.to_srgba().to_vec4();
     }
+    sun_tx.scale = Vec3::splat(counter);
 }
 
-fn on_finish_buildup() {}
+fn on_finish_buildup(mut sun_vis: Single<&mut Visibility, With<Sun>>) {
+    **sun_vis = Visibility::Hidden;
+}
 
 /* NOVA DURING */
 
@@ -190,8 +197,8 @@ fn on_start_during(mut commands: Commands) {
     )));
 }
 
-fn on_finish_during() {
-    //
+fn on_finish_during(mut sun_vis: Single<&mut Visibility, With<Sun>>) {
+    **sun_vis = Visibility::Visible;
 }
 
 /* NOVA POST */
@@ -208,15 +215,15 @@ fn during_after(
     mut sun_mats: ResMut<Assets<SunMaterial>>,
     starfield: Single<&mut MeshMaterial2d<StarfieldMaterial>>,
     player: Single<&mut MeshMaterial2d<ColorMaterial>, With<Player>>,
-    sun: Single<&mut MeshMaterial2d<SunMaterial>>,
+    sun: Single<(&mut Transform, &MeshMaterial2d<SunMaterial>)>,
 ) {
     let counter = 1.0 - timer.0.fraction_remaining();
 
-    let starfield_col = WHITE.mix(&SPLASH_BACKGROUND_COLOR.to_srgba(), counter);
-    let player_col = Color::Srgba(RED).mix(&Color::Srgba(WHITE), counter);
-    let sun_outer = WHITE.mix(&SUN_COLOUR.to_srgba(), counter);
+    let starfield_col = BLOOMED_WHITE.mix(&SPLASH_BACKGROUND_COLOR, counter);
+    let player_col = Color::Srgba(DARK_CYAN).mix(&BLOOMED_WHITE, counter);
+    let sun_outer = BLOOMED_WHITE.mix(&SUN_COLOUR, counter);
 
-    let sun_inner = WHITE.mix(&INNER_SUN_COLOUR.to_srgba(), counter);
+    let sun_inner = BLOOMED_WHITE.mix(&INNER_SUN_COLOUR, counter);
 
     if let Some(material) = starfield_mats.get_mut(&starfield.0) {
         material.background = starfield_col.into();
@@ -226,10 +233,12 @@ fn during_after(
         material.color = player_col;
     }
 
-    if let Some(material) = sun_mats.get_mut(&sun.0) {
-        material.inner_color = sun_inner.to_vec4();
-        material.color = sun_outer.to_vec4();
+    let (mut sun_tx, sun_mat) = sun.into_inner();
+    if let Some(material) = sun_mats.get_mut(sun_mat) {
+        material.inner_color = sun_inner.to_srgba().to_vec4();
+        material.color = sun_outer.to_srgba().to_vec4();
     }
+    sun_tx.scale = Vec3::splat(counter);
 }
 
 fn on_finish_after() {
