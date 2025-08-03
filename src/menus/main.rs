@@ -4,17 +4,9 @@ use bevy::prelude::*;
 use bevy_seedling::prelude::*;
 
 use crate::{
-    MusicAssets,
-    asset_tracking::ResourceHandles,
-    consts::SUN_STARTING_RADIUS,
-    materials::SunMaterial,
-    menus::Menu,
-    player::{ItemPosition, Player},
-    score::Score,
-    screens::Screen,
-    sun::Sun,
-    theme::widget,
-    utils::Rotate,
+    MusicAssets, asset_tracking::ResourceHandles, consts::SUN_STARTING_RADIUS,
+    materials::SunMaterial, menus::Menu, player::ItemPosition, score::Score, screens::Screen,
+    sun::Sun, theme::widget, utils::Rotate,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -105,11 +97,11 @@ fn spawn_main_menu(
         StateScoped(Menu::Main),
         Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)).with_scale(Vec3::splat(0.2)),
         sun,
-        Rotate(0.5),
+        Rotate(-0.5),
         children![(
             Mesh2d(player_mesh),
             MeshMaterial2d(color_materials.add(color)),
-            Transform::from_xyz(1.1 * SUN_STARTING_RADIUS, 0.0, 0.1).with_scale(Vec3::splat(4.0)),
+            Transform::from_xyz(1.1 * SUN_STARTING_RADIUS, 0.0, 0.1).with_scale(Vec3::splat(-4.0)),
             ItemPosition::default(),
         )],
     ));
