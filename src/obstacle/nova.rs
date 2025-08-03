@@ -40,11 +40,11 @@ fn spawn_barriers(
 
     let mut rng = thread_rng();
 
-    for extra in 2..=15 {
-        let scale = rng.gen_range(40.0..60.0);
+    for extra in 4..=14 {
+        let scale = rng.gen_range(20.0..30.0);
         let mesh = meshes.add(Circle::new(scale));
-        let theta = current_theta + extra as f32 * 0.3;
-        let radius = rng.gen_range(sun.radius..(sun.radius + MAX_PLAYER_RADIUS - 80.0));
+        let theta = current_theta + extra as f32 * rng.gen_range(0.5..0.7);
+        let radius = rng.gen_range(sun.radius..(sun.radius + 0.8 * MAX_PLAYER_RADIUS - 80.0));
 
         let pos = Vec3::new(
             radius * (theta + 0.1).sin(),
