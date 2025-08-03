@@ -23,21 +23,37 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(PoolLabel, PartialEq, Eq, Debug, Hash, Clone)]
-struct BackgroundNoiseMarker;
+struct SunProximityPool;
+
+#[derive(PoolLabel, PartialEq, Eq, Debug, Hash, Clone)]
+struct SkimmingSunPool;
 
 fn spawn_background_music(mut commands: Commands, music: Res<MusicAssets>) {
     info!("Spawning background music");
     commands.spawn((
-        SamplerPool(BackgroundNoiseMarker),
+        SamplerPool(SunProximityPool),
+        VolumeNode {
+            volume: Volume::Linear(0.0),
+        },
+    ));
+    commands.spawn((
+        SamplerPool(SkimmingSunPool),
         VolumeNode {
             volume: Volume::Linear(0.0),
         },
     ));
 
     commands.spawn((
-        Name::new("Background noise"),
+        Name::new("Proximity noise"),
         StateScoped(Screen::Gameplay),
-        BackgroundNoiseMarker,
+        SunProximityPool,
+        SamplePlayer::new(music.sun_proximity.clone()).looping(),
+    ));
+
+    commands.spawn((
+        Name::new("Skimming noise"),
+        StateScoped(Screen::Gameplay),
+        SkimmingSunPool,
         SamplePlayer::new(music.sun_proximity.clone()).looping(),
     ));
 }
@@ -45,23 +61,27 @@ fn spawn_background_music(mut commands: Commands, music: Res<MusicAssets>) {
 fn update_volume_based_on_proximity(
     nova: Res<State<Nova>>,
     player: Single<&ItemPosition, With<Player>>,
-    mut volume: Single<&mut VolumeNode, With<SamplerPool<BackgroundNoiseMarker>>>,
+    mut prox_volume: Single<&mut VolumeNode, With<SamplerPool<SunProximityPool>>>,
+    mut skimming_volume: Single<&mut VolumeNode, With<SamplerPool<SkimmingSunPool>>>,
 ) {
     match **nova {
         Nova::Idle | Nova::BuildingUp => {
             let radius = player.radius;
             let new_volume = (1.0 - (radius / 500.0)).clamp(0.0, 1.0) / 2.0;
-            volume.volume = Volume::Linear(new_volume);
+            prox_volume.volume = Volume::Linear(new_volume);
+
+            skimming_volume.volume = Volume::Linear(if radius < 1.0 { 0.5 } else { 0.0 });
         }
         Nova::During => {
-            if volume.volume.linear() <= 0.0 {
+            skimming_volume.volume = Volume::Linear(0.0);
+            if prox_volume.volume.linear() <= 0.0 {
                 return;
             }
 
-            volume.volume = decrement_volume(volume.volume, 0.01);
+            prox_volume.volume = decrement_volume(prox_volume.volume, 0.01);
         }
         Nova::After => {
-            // nop
+            skimming_volume.volume = Volume::Linear(0.0);
         }
     }
 }

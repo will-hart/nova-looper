@@ -21,6 +21,7 @@ pub use assets::PlayerAssets;
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<ItemPosition>();
     app.register_type::<Player>();
+    app.register_type::<PlayerEffects>();
     app.register_type::<PlayerPower>();
     app.register_type::<ShieldAlarm>();
 
@@ -38,7 +39,7 @@ pub(super) fn plugin(app: &mut App) {
         (
             shield_decay,
             power_generation,
-            shield_monitor.run_if(in_state(Nova::Idle)),
+            (shield_monitor, activate_trail_particles_on_sun).run_if(in_state(Nova::Idle)),
         )
             .run_if(in_state(Screen::Gameplay)),
     );
@@ -52,6 +53,10 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Player;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct PlayerEffects;
 
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
@@ -121,6 +126,9 @@ fn spawn_player(
         1,
     ));
 
+    let mut particle_state = ParticleSpawnerState::default();
+    particle_state.active = false;
+
     commands.spawn((
         Mesh2d(player_mesh),
         MeshMaterial2d(materials.add(color)),
@@ -138,10 +146,24 @@ fn spawn_player(
             Transform::from_translation(Vec3::new(0.0, 0.0, -0.3)),
             ParticleSpawner(particle_sprite),
             ParticleEffectHandle(asset_server.load("particles/rocket_trail.ron")),
-            ParticleSpawnerState::default(),
+            particle_state,
             NoAutoAabb,
+            PlayerEffects
         )],
     ));
+}
+
+fn activate_trail_particles_on_sun(
+    player_pos: Single<&ItemPosition, With<Player>>,
+    mut effect_state: Single<&mut ParticleSpawnerState, With<PlayerEffects>>,
+) {
+    info!(
+        "ACTIVE? {} -> {}",
+        player_pos.radius,
+        player_pos.radius < 1.0
+    );
+
+    effect_state.active = player_pos.radius < 1.0;
 }
 
 fn update_player_theta(
