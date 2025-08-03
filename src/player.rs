@@ -10,6 +10,7 @@ use crate::{
     consts::{MAX_PLAYER_RADIUS, PLAYER_STARTING_SPEED},
     input::PlayerInputAngle,
     materials::BarDataSource,
+    score::Score,
     screens::Screen,
     sun::Sun,
     supernova::Nova,
@@ -171,6 +172,7 @@ fn activate_trail_particles_on_sun(
 fn update_player_theta(
     time: Res<Time>,
     nova: Option<Res<State<Nova>>>,
+    score: Option<Res<Score>>,
     mut player: Single<&mut ItemPosition, With<Player>>,
 ) {
     let speed_multiplier = if let Some(nova) = nova {
@@ -190,7 +192,14 @@ fn update_player_theta(
     } else {
         1.0
     };
-    player.theta += player.speed * time.delta_secs() * speed_multiplier;
+
+    let level_multiplier = if let Some(score) = score {
+        score.multiplier as f32 / 20.0
+    } else {
+        0.0
+    };
+
+    player.theta += player.speed * time.delta_secs() * (speed_multiplier + level_multiplier);
 }
 
 fn set_player_position(
