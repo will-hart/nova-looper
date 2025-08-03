@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::{player::ItemPosition, supernova::Nova};
+
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Rotate>();
     app.add_systems(
@@ -38,7 +40,9 @@ fn rotate_shapes(time: Res<Time>, mut shapes: Query<(&mut Transform, &Rotate)>) 
 
 #[derive(Component, Debug, Reflect)]
 #[reflect(Component)]
-pub struct DestroyAt(pub f32);
+pub struct DestroyAt {
+    pub time: f32,
+}
 
 /// Destroys [DestroyAt] components after their scheduled time
 fn destroy_at_watcher(
@@ -48,8 +52,7 @@ fn destroy_at_watcher(
 ) {
     let elapsed = time.elapsed_secs();
     for (ent, destroyee) in &destroyees {
-        if elapsed > destroyee.0 {
-            // info!("Destroying obstacle");
+        if elapsed > destroyee.time {
             commands.entity(ent).despawn();
         }
     }
@@ -86,4 +89,26 @@ pub fn move_items_in_direction(
     for (mut tx, mover) in &mut items {
         tx.translation += (time.delta_secs() * mover.0).extend(0.0);
     }
+}
+
+/// Returns the player speed multipliers for (1) the state of the nova and (2)
+/// the level multiplier. Add the two together to get the total speed
+pub fn get_player_speed_multipliers(
+    multiplier: u32,
+    position: &ItemPosition,
+    nova_state: Nova,
+) -> (f32, f32) {
+    let speed_multiplier = match nova_state {
+        Nova::Idle => {
+            if position.radius < 1.0 {
+                1.5
+            } else {
+                1.0
+            }
+        }
+        Nova::BuildingUp => 1.0,
+        _ => 0.8,
+    };
+
+    (speed_multiplier, multiplier as f32 / 20.0)
 }

@@ -14,6 +14,7 @@ use crate::{
     screens::Screen,
     sun::Sun,
     supernova::Nova,
+    utils::get_player_speed_multipliers,
 };
 
 mod assets;
@@ -175,28 +176,15 @@ fn update_player_theta(
     score: Option<Res<Score>>,
     mut player: Single<&mut ItemPosition, With<Player>>,
 ) {
-    let speed_multiplier = if let Some(nova) = nova {
-        match **nova {
-            Nova::Idle => {
-                if player.radius < 1.0 {
-                    1.5
-                } else {
-                    1.0
-                }
-            }
-            Nova::BuildingUp => 1.0,
-            _ => 0.8,
-        }
-    } else if player.radius < 1.0 {
-        1.5
+    let (speed_multiplier, level_multiplier) = if let Some(nova) = nova {
+        let multiplier = if let Some(score) = score {
+            score.multiplier
+        } else {
+            0
+        };
+        get_player_speed_multipliers(multiplier, &player, **nova)
     } else {
-        1.0
-    };
-
-    let level_multiplier = if let Some(score) = score {
-        score.multiplier as f32 / 20.0
-    } else {
-        0.0
+        (1.0, 0.0)
     };
 
     player.theta += player.speed * time.delta_secs() * (speed_multiplier + level_multiplier);

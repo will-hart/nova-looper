@@ -15,10 +15,11 @@ use crate::{
     consts::{MAX_PLAYER_RADIUS, OBSTACLE_COLOR, SHIELD_COST_ON_OBSTACLE_HIT},
     obstacle::nova::BlackHole,
     player::{ItemPosition, Player, PlayerPower, PlayerShield},
+    score::Score,
     screens::Screen,
     sun::Sun,
     supernova::Nova,
-    utils::DestroyAt,
+    utils::{self, DestroyAt},
 };
 
 const BURNED_UP: &str = "You burned up in the sun.";
@@ -67,6 +68,8 @@ fn reset_death_reason(mut death_reason: ResMut<DeathReason>) {
 fn periodically_spawn_obstacles(
     mut commands: Commands,
     time: Res<Time>,
+    score: Res<Score>,
+    nova_state: Res<State<Nova>>,
     mut timer: Local<f32>,
     player: Single<&ItemPosition, With<Player>>,
 ) {
@@ -81,6 +84,12 @@ fn periodically_spawn_obstacles(
     let num_obstacles = rng.gen_range(1..=3);
     let radius = rng.gen_range(-75.0..(MAX_PLAYER_RADIUS * 0.5));
 
+    // account for the fact that the player speeds up over time. This should be
+    // sufficient for despawning on the other side of the world as the multiplier
+    // doesn't increase that quickly while the player is dodging.
+    let extra_speed = utils::get_player_speed_multipliers(score.multiplier, &player, **nova_state);
+    let speed = player.speed * (extra_speed.0 + extra_speed.1);
+
     for _ in 0..num_obstacles {
         let radius = radius + rng.gen_range(-60.0..20.0);
         let theta = player.theta + std::f32::consts::PI + rng.gen_range(-0.05..=0.05);
@@ -88,8 +97,8 @@ fn periodically_spawn_obstacles(
             theta,
             radius,
             speed: rng.gen_range(-30.0..-15.0),
-            // destroy after one player revolution
-            destroy_at: std::f32::consts::TAU / player.speed + time.elapsed_secs(),
+            // destroy after one revolution at the player's current speed
+            destroy_at: std::f32::consts::TAU / speed + time.elapsed_secs(),
         });
     }
 }
@@ -133,7 +142,9 @@ fn spawn_obstacle(
         LinearVelocity(-translation.truncate().normalize() * config.speed),
         Sensor,
         StateScoped(Screen::Gameplay),
-        DestroyAt(config.destroy_at),
+        DestroyAt {
+            time: config.destroy_at,
+        },
         ItemPosition {
             radius,
             theta,

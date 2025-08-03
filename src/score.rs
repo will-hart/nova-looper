@@ -121,7 +121,9 @@ fn increase_multiplier(
                 max: 64.0,
             },
             MoveInDirection(player_tx.translation.truncate().normalize() * 100.0),
-            DestroyAt(time.elapsed_secs() + 4.0),
+            DestroyAt {
+                time: time.elapsed_secs() + 4.0,
+            },
         ));
 
         commands.spawn(SamplePlayer::new(player_assets.multiplier_up.clone()));
