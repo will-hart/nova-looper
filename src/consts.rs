@@ -31,7 +31,3 @@ pub const SCORE_INCREASE_RATE: f32 = 7.0;
 
 /// The cost to shields of hitting an obstacle
 pub const SHIELD_COST_ON_OBSTACLE_HIT: f32 = 30.0;
-
-/// The rate at which obstacles fall towards the center of the sun
-/// Negative value falls inwards
-pub const OBSTACLE_GRAVITY_SCALE: f32 = -20.0;

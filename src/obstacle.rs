@@ -12,7 +12,7 @@ mod nova;
 
 use crate::{
     PlayerAssets,
-    consts::{MAX_PLAYER_RADIUS, OBSTACLE_GRAVITY_SCALE, SHIELD_COST_ON_OBSTACLE_HIT},
+    consts::{MAX_PLAYER_RADIUS, SHIELD_COST_ON_OBSTACLE_HIT},
     obstacle::nova::WarpBarrier,
     player::{ItemPosition, Player, PlayerPower, PlayerShield},
     screens::Screen,
@@ -79,7 +79,7 @@ fn periodically_spawn_obstacles(
 
     *timer = rng.gen_range(0.3..0.7);
     let num_obstacles = rng.gen_range(1..=4);
-    let radius = rng.gen_range(-75.0..(MAX_PLAYER_RADIUS * 0.45));
+    let radius = rng.gen_range(-75.0..(MAX_PLAYER_RADIUS * 0.5));
 
     for _ in 0..num_obstacles {
         let radius = radius + rng.gen_range(-40.0..40.0);
@@ -87,6 +87,7 @@ fn periodically_spawn_obstacles(
         commands.queue(SpawnObstacle {
             theta,
             radius,
+            speed: rng.gen_range(-30.0..-18.0),
             // destroy after one player revolution
             destroy_at: std::f32::consts::TAU / player.speed + time.elapsed_secs(),
         });
@@ -98,6 +99,7 @@ struct SpawnObstacle {
     theta: f32,
     radius: f32,
     destroy_at: f32,
+    speed: f32,
 }
 
 impl Command for SpawnObstacle {
@@ -129,7 +131,7 @@ fn spawn_obstacle(
         )),
         RigidBody::Dynamic,
         Collider::rectangle(8.0, 14.0),
-        LinearVelocity(-translation.truncate().normalize() * OBSTACLE_GRAVITY_SCALE),
+        LinearVelocity(-translation.truncate().normalize() * config.speed),
         Sensor,
         StateScoped(Screen::Gameplay),
         DestroyAt(config.destroy_at),
