@@ -17,6 +17,7 @@ pub(super) fn plugin(app: &mut App) {
         );
 }
 
+#[allow(dead_code, reason = "bevy issue 19573")]
 #[derive(Asset, TypePath, AsBindGroup, ShaderType, Debug, Clone)]
 #[uniform(0, StarfieldMaterial)]
 pub struct StarfieldMaterial {
