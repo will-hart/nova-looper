@@ -12,6 +12,7 @@ use crate::{
     consts::{INNER_SUN_COLOUR, SPLASH_BACKGROUND_COLOR, SUN_COLOUR},
     materials::{StarfieldMaterial, SunMaterial},
     player::Player,
+    score::Score,
     screens::Screen,
 };
 
@@ -195,8 +196,9 @@ fn on_finish_during() {
 
 /* NOVA POST */
 
-fn on_start_after(mut commands: Commands) {
+fn on_start_after(mut commands: Commands, mut score: ResMut<Score>) {
     commands.insert_resource(NovaTimer(Timer::from_seconds(AFTER_PHASE, TimerMode::Once)));
+    score.multiplier += 5;
 }
 
 fn during_after(
