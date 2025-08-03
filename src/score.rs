@@ -112,6 +112,7 @@ fn increase_multiplier(
         score.multiplier += 1;
 
         commands.spawn((
+            StateScoped(Screen::Gameplay),
             Text2d::new(format!("{}x", score.multiplier)),
             TextFont::from_font_size(32.0),
             Transform::from_translation(player_tx.translation),
