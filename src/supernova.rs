@@ -112,6 +112,37 @@ fn on_start_buildup(
     commands.spawn(SamplePlayer::new(player_assets.nova_alert.clone()));
     commands.insert_resource(NovaTimer(Timer::from_seconds(BUILD_PHASE, TimerMode::Once)));
     commands.spawn(SamplePlayer::new(music_assets.supernova.clone()));
+
+    commands.spawn((
+        StateScoped(Nova::BuildingUp),
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::ZERO,
+            left: Val::ZERO,
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            ..default()
+        },
+        children![(
+            Node {
+                position_type: PositionType::Relative,
+                top: Val::Px(45.0),
+                ..default()
+            },
+            Text::new("NOVA ALERT - AUTOPILOT ON"),
+            TextLayout {
+                justify: JustifyText::Center,
+                ..default()
+            },
+            TextFont {
+                font_size: 12.0,
+                ..default()
+            },
+            TextColor(WHITE.into()),
+        )],
+    ));
 }
 
 fn during_buildup(

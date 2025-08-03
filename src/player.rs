@@ -35,7 +35,12 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        (shield_decay, power_generation, shield_monitor).run_if(in_state(Screen::Gameplay)),
+        (
+            shield_decay,
+            power_generation,
+            shield_monitor.run_if(in_state(Nova::Idle)),
+        )
+            .run_if(in_state(Screen::Gameplay)),
     );
     app.add_systems(
         PostUpdate,
@@ -139,8 +144,26 @@ fn spawn_player(
     ));
 }
 
-fn update_player_theta(time: Res<Time>, mut player: Single<&mut ItemPosition, With<Player>>) {
-    let multiplier = if player.radius < 1.0 { 1.5 } else { 1.0 };
+fn update_player_theta(
+    time: Res<Time>,
+    nova: Option<Res<State<Nova>>>,
+    mut player: Single<&mut ItemPosition, With<Player>>,
+) {
+    let multiplier = if nova.is_none() {
+        if player.radius < 1.0 { 1.5 } else { 1.0 }
+    } else {
+        match **nova.unwrap() {
+            Nova::Idle => {
+                if player.radius < 1.0 {
+                    1.5
+                } else {
+                    1.0
+                }
+            }
+            Nova::BuildingUp => 1.0,
+            _ => 0.4,
+        }
+    };
     player.theta += player.speed * time.delta_secs() * multiplier;
 }
 
@@ -184,20 +207,47 @@ fn reset_camera_position(mut cameras: Query<&mut Transform, With<Camera2d>>) {
     }
 }
 
-fn power_generation(time: Res<Time>, mut player: Single<(&ItemPosition, &mut PlayerPower)>) {
+fn power_generation(
+    time: Res<Time>,
+    nova: Option<Res<State<Nova>>>,
+    mut player: Single<(&ItemPosition, &mut PlayerPower)>,
+) {
     let distance = player.0.radius;
-    // linear decay
-    let power = -0.05 * distance + 10.0;
-    player.1.0 += time.delta_secs() * power.clamp(-3.0, 10.0);
+
+    player.1.0 = match nova {
+        Some(ns) => match **ns {
+            Nova::Idle => {
+                let power = -0.05 * distance + 14.0;
+                player.1.0 + time.delta_secs() * power.clamp(-3.0, 10.0)
+            }
+            Nova::BuildingUp | Nova::During => 0.99,
+            Nova::After => 0.0,
+        },
+        None => {
+            let power = -0.05 * distance + 14.0;
+            player.1.0 + time.delta_secs() * power.clamp(-3.0, 10.0)
+        }
+    };
 }
 
-fn shield_decay(time: Res<Time>, mut player: Single<(&ItemPosition, &mut PlayerShield)>) {
+fn shield_decay(
+    time: Res<Time>,
+    nova: Option<Res<State<Nova>>>,
+    mut player: Single<(&ItemPosition, &mut PlayerShield)>,
+) {
     let distance = player.0.radius;
-    let rate = if distance > 55.0 {
-        0.3 * distance + 23.0 // linear after intersection
+    let rate = if nova.is_none() || matches!(**nova.unwrap(), Nova::Idle) {
+        // decay when close to the sun
+        if distance > 55.0 {
+            0.3 * distance + 23.0 // linear after intersection
+        } else {
+            -2.0 / (0.005 * distance)
+        }
     } else {
-        -2.0 / (0.005 * distance)
+        // just recharge when not in nova
+        0.3 * distance + 23.0
     };
+
     player.1.0 = (player.1.0 + time.delta_secs() * rate.clamp(-10.0, 10.0)).clamp(0.0, 100.0);
 }
 

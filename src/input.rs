@@ -26,7 +26,7 @@ fn control_player(
     mut player: Single<&mut ItemPosition, With<Player>>,
 ) {
     match **nova {
-        Nova::Idle | Nova::BuildingUp => {
+        Nova::Idle | Nova::During => {
             if keyboard_input.pressed(KeyCode::Space)
                 || touches.iter().next().is_some()
                 || mouse.pressed(MouseButton::Left)
@@ -37,7 +37,7 @@ fn control_player(
             }
             delta.0 = delta.0.clamp(-1.0, 1.0);
         }
-        Nova::During => {
+        Nova::BuildingUp => {
             delta.0 = 1.0;
         }
         Nova::After => {
