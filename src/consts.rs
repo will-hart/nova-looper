@@ -26,10 +26,13 @@ pub const MAIN_THEME_COLOR: Color = Color::hsla(21.0, 0.936, 0.51, 1.0);
 /// The colour of the middle of the sun
 pub const INNER_SUN_COLOUR: Color = Color::srgba(3.968, 0.372, 0.051, 1.0);
 /// The colour of the sun
-pub const SUN_COLOUR: Color = Color::srgba(1.868, 0.522, 0.021, 1.0);
+pub const SUN_COLOUR: Color = Color::srgba(2.868, 0.602, 0.061, 1.0);
 
 /// The rate the score increases each second
 pub const SCORE_INCREASE_RATE: f32 = 7.0;
 
 /// The cost to shields of hitting an obstacle
 pub const SHIELD_COST_ON_OBSTACLE_HIT: f32 = 30.0;
+
+/// The colour of sun flare obstacles
+pub const OBSTACLE_COLOR: Color = Color::srgba(4.0, 1.7, 0.08, 1.0);

@@ -12,7 +12,7 @@ mod nova;
 
 use crate::{
     PlayerAssets,
-    consts::{MAX_PLAYER_RADIUS, SHIELD_COST_ON_OBSTACLE_HIT},
+    consts::{MAX_PLAYER_RADIUS, OBSTACLE_COLOR, SHIELD_COST_ON_OBSTACLE_HIT},
     obstacle::nova::WarpBarrier,
     player::{ItemPosition, Player, PlayerPower, PlayerShield},
     screens::Screen,
@@ -116,8 +116,7 @@ fn spawn_obstacle(
     sun: Single<&Sun>,
 ) {
     // info!("Spawning obstacle");
-    let mesh = meshes.add(Rectangle::new(5.0, 15.0));
-    let color = Color::srgba(4.0, 1.60, 0.07, 1.0);
+    let mesh = meshes.add(Rectangle::new(1.0, 15.0));
 
     let radius = config.radius + sun.radius;
     let theta = config.theta;
@@ -143,7 +142,7 @@ fn spawn_obstacle(
         },
         Visibility::Visible,
         Mesh2d(mesh),
-        MeshMaterial2d(materials.add(color)),
+        MeshMaterial2d(materials.add(OBSTACLE_COLOR)),
     ));
 }
 
