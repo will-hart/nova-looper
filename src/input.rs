@@ -35,7 +35,7 @@ fn control_player(
         Nova::DuringNova => {
             delta.0 = 1.0;
         }
-        Nova::PostNova => {
+        Nova::AfterNova => {
             delta.0 = -1.0;
         }
     };

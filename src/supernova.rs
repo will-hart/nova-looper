@@ -6,12 +6,17 @@ use bevy::{
 use bevy_seedling::sample::SamplePlayer;
 
 use crate::{
-    MusicAssets,
+    MusicAssets, PlayerAssets,
     consts::{INNER_SUN_COLOUR, SPLASH_BACKGROUND_COLOR, SUN_COLOUR},
     materials::{StarfieldMaterial, SunMaterial},
     player::Player,
     screens::Screen,
 };
+
+const IDLE_PHASE: f32 = 30.0;
+const BUILD_PHASE: f32 = 5.0;
+const DURING_PHASE: f32 = 4.0;
+const AFTER_PHASE: f32 = 4.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_sub_state::<Nova>();
@@ -31,9 +36,9 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Nova::DuringNova), on_start_during);
     app.add_systems(OnExit(Nova::DuringNova), on_finish_during);
 
-    app.add_systems(OnEnter(Nova::PostNova), on_start_post);
-    app.add_systems(Update, during_post.run_if(in_state(Nova::PostNova)));
-    app.add_systems(OnExit(Nova::PostNova), on_finish_post);
+    app.add_systems(OnEnter(Nova::AfterNova), on_start_after);
+    app.add_systems(Update, during_after.run_if(in_state(Nova::AfterNova)));
+    app.add_systems(OnExit(Nova::AfterNova), on_finish_after);
 }
 
 #[derive(SubStates, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
@@ -50,7 +55,7 @@ pub enum Nova {
     DuringNova,
     #[expect(clippy::enum_variant_names)]
     /// While we're arriving at the next star, before we start skimming
-    PostNova,
+    AfterNova,
 }
 
 impl Nova {
@@ -58,8 +63,8 @@ impl Nova {
         match self {
             Nova::Idle => Nova::BuildingUp,
             Nova::BuildingUp => Nova::DuringNova,
-            Nova::DuringNova => Nova::PostNova,
-            Nova::PostNova => Nova::Idle,
+            Nova::DuringNova => Nova::AfterNova,
+            Nova::AfterNova => Nova::Idle,
         }
     }
 }
@@ -86,17 +91,17 @@ fn tick_nova_timer(
 pub struct NovaTimer(Timer);
 
 fn on_start_idle(mut commands: Commands) {
-    commands.insert_resource(NovaTimer(Timer::from_seconds(30.0, TimerMode::Once)));
+    commands.insert_resource(NovaTimer(Timer::from_seconds(IDLE_PHASE, TimerMode::Once)));
 }
 
-fn on_finish_idle() {
-    //
+fn on_finish_idle(mut commands: Commands, player_assets: Res<PlayerAssets>) {
+    commands.spawn(SamplePlayer::new(player_assets.nova_alert.clone()));
 }
 
 /* NOVA BUILDING UP */
 
 fn on_start_buildup(mut commands: Commands, music_assets: Res<MusicAssets>) {
-    commands.insert_resource(NovaTimer(Timer::from_seconds(12.5, TimerMode::Once)));
+    commands.insert_resource(NovaTimer(Timer::from_seconds(BUILD_PHASE, TimerMode::Once)));
     commands.spawn(SamplePlayer::new(music_assets.supernova.clone()));
 }
 
@@ -135,7 +140,10 @@ fn on_finish_buildup() {}
 /* NOVA DURING */
 
 fn on_start_during(mut commands: Commands) {
-    commands.insert_resource(NovaTimer(Timer::from_seconds(5.0, TimerMode::Once)));
+    commands.insert_resource(NovaTimer(Timer::from_seconds(
+        DURING_PHASE,
+        TimerMode::Once,
+    )));
 }
 
 fn on_finish_during() {
@@ -144,11 +152,11 @@ fn on_finish_during() {
 
 /* NOVA POST */
 
-fn on_start_post(mut commands: Commands) {
-    commands.insert_resource(NovaTimer(Timer::from_seconds(5.0, TimerMode::Once)));
+fn on_start_after(mut commands: Commands) {
+    commands.insert_resource(NovaTimer(Timer::from_seconds(AFTER_PHASE, TimerMode::Once)));
 }
 
-fn during_post(
+fn during_after(
     timer: Res<NovaTimer>,
     mut starfield_mats: ResMut<Assets<StarfieldMaterial>>,
     mut player_mats: ResMut<Assets<ColorMaterial>>,
@@ -179,6 +187,6 @@ fn during_post(
     }
 }
 
-fn on_finish_post() {
+fn on_finish_after() {
     //
 }
